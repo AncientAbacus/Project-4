@@ -144,17 +144,29 @@ function createStreamGraph() {
         .domain(optypes)
         .range(d3.schemePaired);
 
-    // Draw the axes
+  // Draw the grid lines for the x-axis (without the spine)
     svg.append('g')
-        .attr('transform', `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(xScale))
-        .select(".domain").remove()
-        ;
+    .attr('transform', `translate(0,${height - margin.bottom})`)
+    .attr('class', 'x-axis-grid')
+    .call(d3.axisBottom(xScale).ticks(10).tickSize(-height + margin.top + margin.bottom))
+    .style('stroke', 'lightgrey')  // Set light grey color for grid lines
+    .style('stroke-opacity', 0.2); // Make the grid lines very faint
 
+    // Draw the grid lines for the y-axis (without the spine)
     svg.append('g')
-        .attr('transform', `translate(${margin.left},0)`)
-        .call(d3.axisLeft(yScale))
-        .select(".domain").remove();
+    .attr('transform', `translate(${margin.left},0)`)
+    .attr('class', 'y-axis-grid')
+    .call(d3.axisLeft(yScale).ticks(10).tickSize(-width + margin.left + margin.right))
+    .style('stroke', 'lightgrey')  // Set light grey color for grid lines
+    .style('stroke-opacity', 0.2); // Make the grid lines very faint
+
+    // Remove the axis domain lines (spines)
+    svg.selectAll('.domain').remove();
+
+    // Change the font of the axis ticks to Roboto
+    svg.selectAll('.tick text')
+    .style('font-family', 'Sora')
+    .style('font-size', '11px');  // Optional: adjust font size for readability
 
 
     // define mouseover event

@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
+  <!--font-->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Plus Jakarta Sans' rel='stylesheet'>
+
+
+
+
+
   <!-- D3.js Library -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
 
@@ -26,7 +36,10 @@
         <h2 ><span id="teamname">Team ChatGTE</span> presents: <span id="title">The Organ Trail 🩸</span></h2>
       </div>
       <h5 id="subtitle">An exploration of how surgery affects our bodies and what we can expect from different operations.</h5>
-
+      <label id="names">
+        By <span class="name">Gino Angelici</span>, <span class="name">Tony Wang</span>, and <span class="name">Eddie Lu</span>
+      </label>
+      
       <p>
         Every year, <span id="emphasis">millions undergo surgery</span>, but the types of procedures performed 
         aren’t distributed evenly across age groups. While younger patients might face orthopedic fixes from 
@@ -36,7 +49,7 @@
         changes as we age.</strong>
       </p>
 
-      <h4>The Surgical Journey: Trends Across Time</h4>
+      <h4>Operation Types</h4>
       <div id="stream"></div>
 
       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora saepe id ea non voluptatum ex nam, error ullam vero eius quae alias fuga quam dignissimos ipsam, sed necessitatibus asperiores cupiditate.
