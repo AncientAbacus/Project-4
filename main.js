@@ -47,6 +47,8 @@ async function loadData() {
     console.log(data);
     // displayStats();
     createStreamGraph();
+    createSurgicalPositionViz();
+    createSurgicalViz();
   }
 
 
@@ -252,4 +254,210 @@ function createStreamGraph() {
         .attr('fill', 'black')  // Set text color to grey
         .style('font-weight', 'lighter')  // Make text bold
         .text('Number of Cases');
+}
+
+// Create surgical position visualization
+function createSurgicalPositionViz() {
+    // Set dimensions
+    const width = 600;
+    const height = 400;
+
+    // Create SVGs for both plots
+    const topSvg = d3.select("#topPositionPlot")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("border", "1px solid #ccc");
+
+    const bottomSvg = d3.select("#bottomPositionPlot")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("border", "1px solid #ccc");
+
+    // Load CSV and create dropdown
+    d3.csv("data/cases_new.csv").then(function(data) {
+        const positions = [...new Set(data.map(d => d.position))];
+        
+        const dropdown = d3.select(".position-dropdown")
+            .append("select")
+            .attr("id", "positionSelect")
+            .style("width", "200px")
+            .style("margin", "10px");
+
+        dropdown.append("option")
+            .text("Select Position")
+            .attr("value", "");
+
+        dropdown.selectAll("option.position")
+            .data(positions)
+            .enter()
+            .append("option")
+            .text(d => d)
+            .attr("value", d => d);
+
+        // Update function for position image
+        function updatePositionImage(position) {
+            bottomSvg.selectAll("*").remove();
+            
+            bottomSvg.append("image")
+                .attr("xlink:href", `surgical positions/${position}.png`)
+                .attr("width", width)
+                .attr("height", height)
+                .attr("preserveAspectRatio", "xMidYMid meet");
+        }
+
+        // Add dropdown event listener
+        dropdown.on("change", function() {
+            const selectedPosition = d3.select(this).property("value");
+            console.log("Selected position:", selectedPosition);
+            if (selectedPosition) {
+                updatePositionImage(selectedPosition);
+                console.log("Calling updateTopPlot with data:", data.length, "rows");
+                updateTopPlot(data, selectedPosition, 'op_duration');
+            }
+        });
+    });
+}
+
+function createSurgicalViz() {
+    // Duration types configuration
+    const durationTypes = [
+        {id: 'op_duration', label: 'Operation Duration'},
+        {id: 'case_duration', label: 'Case Duration'},
+        {id: 'ane_duration', label: 'Anesthesia Duration'}
+    ];
+
+    // Create button container
+    const buttonContainer = d3.select(".position-dropdown")
+        .append("div")
+        .attr("class", "duration-buttons");
+
+    // Add duration buttons
+    buttonContainer.selectAll("button")
+        .data(durationTypes)
+        .enter()
+        .append("button")
+        .attr("class", d => `duration-btn ${d.id}`)
+        .classed("active", d => d.id === "op_duration")
+        .text(d => d.label)
+        .on("click", function(event, d) {
+            // Update active state
+            buttonContainer.selectAll(".duration-btn")
+                .classed("active", false);
+            d3.select(this).classed("active", true);
+            
+            // Update plot
+            const selectedPosition = d3.select("#positionSelect").property("value");
+            if (selectedPosition) {
+                updateTopPlot(data, selectedPosition, d.id);
+            }
+        });
+
+    // Update dropdown event listener
+    dropdown.on("change", function() {
+        const selectedPosition = d3.select(this).property("value");
+        if (selectedPosition) {
+            updatePositionImage(selectedPosition);
+            const activeDurationType = d3.select(".duration-btn.active").datum().id;
+            updateTopPlot(data, selectedPosition, activeDurationType);
+        }
+    });
+}
+
+function updateTopPlot(data, position, durationType) {
+    const margin = {top: 40, right: 30, bottom: 40, left: 50};
+    const width = 800 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+
+    // Get duration label
+    const durationLabel = {
+        'op_duration': 'Operation',
+        'case_duration': 'Case',
+        'ane_duration': 'Anesthesia'
+    }[durationType];
+
+    // Filter data for selected position and duration type
+    const filteredData = data
+        .filter(d => d.position === position)
+        .map(d => +d[durationType]);
+
+    // Create histogram bins
+    const histogram = d3.histogram()
+        .domain([0, d3.max(filteredData)])
+        .thresholds(20);  // 20 bins for duration distribution
+
+    const bins = histogram(filteredData);
+
+    // Clear existing plot
+    d3.select("#topPositionPlot").selectAll("*").remove();
+    
+    // Create new SVG
+    const svg = d3.select("#topPositionPlot")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Scales
+    const x = d3.scaleLinear()
+        .domain([0, d3.max(filteredData)])
+        .range([0, width]);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(bins, d => d.length)])
+        .range([height, 0]);
+
+    // Add bars
+    svg.selectAll("rect")
+        .data(bins)
+        .enter()
+        .append("rect")
+        .attr("x", d => x(d.x0))
+        .attr("width", d => x(d.x1) - x(d.x0))
+        .attr("y", d => y(d.length))
+        .attr("height", d => height - y(d.length))
+        .attr("fill", "#69b3a2")
+        .on("mouseover", function(event, d) {
+            d3.select(this).attr("opacity", 0.8);
+            svg.append("text")
+                .attr("class", "tooltip")
+                .attr("x", x(d.x0) + (x(d.x1) - x(d.x0))/2)
+                .attr("y", y(d.length) - 5)
+                .attr("text-anchor", "middle")
+                .text(`${d.length} cases: ${Math.round(d.x0)}-${Math.round(d.x1)} mins`);
+        })
+        .on("mouseout", function() {
+            d3.select(this).attr("opacity", 1);
+            svg.selectAll(".tooltip").remove();
+        });
+
+    // Add axes
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x).ticks(10))
+        .append("text")
+        .attr("x", width/2)
+        .attr("y", 35)
+        .attr("fill", "black")
+        .attr("class", "x-axis-label")
+        .text(`${durationLabel} Duration (minutes)`);
+
+    svg.append("g")
+        .call(d3.axisLeft(y))
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -40)
+        .attr("x", -height/2)
+        .attr("fill", "black")
+        .text("Frequency");
+
+    // Add title
+    svg.append("text")
+        .attr("x", width/2)
+        .attr("y", -margin.top/2)
+        .attr("text-anchor", "middle")
+        .attr("class", "plot-title")
+        .text(`${durationLabel} Duration Distribution for ${position} Position`);
 }
