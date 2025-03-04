@@ -295,3 +295,11 @@ div.header {
   color:crimson;
   font-weight:700;
 }
+
+#subtitle{
+  font-weight:lighter;
+  opacity: 0.5;
+  font-style: italic;
+  padding:0;
+  margin:0;
+}

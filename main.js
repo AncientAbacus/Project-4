@@ -52,7 +52,7 @@ async function loadData() {
 
 // execute loadData when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', async () => {
-await loadData();
+    await loadData();
 });
 
 
@@ -103,7 +103,7 @@ function updateStats(filteredData) {
 // create STREAMGRAPH --------------------------------------------------------------------------------
 function createStreamGraph() {
     const width = 1000;
-    const height = 600;
+    const height = 500;
     const margin = { top: 20, right: 30, bottom: 40, left: 40 };
 
     const svg = d3
@@ -169,6 +169,8 @@ function createStreamGraph() {
         .attr('fill', d => color(d.key))
         .attr('d', area);
 
+    
+
     // Draw the legend
     const legend = svg.append('g')
         .attr('transform', `translate(${width - margin.right + 20},${margin.top})`)
@@ -190,4 +192,6 @@ function createStreamGraph() {
         .attr('y', 9.5)
         .attr('dy', '0.32em')
         .text(d => d);
+
+        
 }
