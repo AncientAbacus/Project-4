@@ -121,7 +121,7 @@ function createStreamGraph() {
     const ageBinKeys = Array.from(ageBins.keys()).sort((a, b) => d3.ascending(Number(a.split('-')[0]), Number(b.split('-')[0])));
     const optypes = Array.from(new Set(data.map(d => d.optype))).sort(d3.descending);
     
-    // Reorder the data to make sure it's stacked in the correct order
+    // reorderthe data to make sure it's stacked in the correct order
     const orderedAgeBins = ageBinKeys.map(key => ageBins.get(key));
 
     const stack = d3.stack()
@@ -142,7 +142,7 @@ function createStreamGraph() {
 
     const color = d3.scaleOrdinal()
         .domain(optypes)
-        .range(d3.schemeSet2);
+        .range(d3.schemePaired);
 
     // Draw the axes
     svg.append('g')
@@ -156,18 +156,45 @@ function createStreamGraph() {
         .call(d3.axisLeft(yScale))
         .select(".domain").remove();
 
+
+    // define mouseover event
+    const mouseover = function(event,d) {
+        tooltip.style("opacity", 1)
+        d3.selectAll(".myArea").style("opacity", .2)
+        d3.select(this)
+          .style("stroke", "black")
+          .style("opacity", 1)
+      }
+
+    const mousemove = function(event,d,i) {
+        let grp = d.key
+        tooltip.text(grp)
+        tooltip.style('left', (event.pageX + 10) + 'px')
+                .style('top', (event.pageY - 28) + 'px');
+      }
+    const mouseleave = function(event,d) {
+        tooltip.style("opacity", 0)
+        d3.selectAll(".myArea").style("opacity", 1)
+        d3.select(this).style("stroke", "none").style("opacity",1);
+       }
+
     // Draw the area chart
     const area = d3.area()
         .x((d, i) => xScale(ageBinKeys[i]))  // Correct x-axis position for each bin
         .y0(d => yScale(d[0]))
         .y1(d => yScale(d[1]));
 
-    svg.append('g')
+        svg.append('g')
         .selectAll('path')
         .data(series)
         .join('path')
         .attr('fill', d => color(d.key))
-        .attr('d', area);
+        .attr('d', area)
+        .attr("class", "myArea")
+        .on("mouseover", mouseover)
+        .on("mousemove",mousemove)
+        .on("mouseleave", mouseleave);
+    
 
     
 
@@ -193,5 +220,24 @@ function createStreamGraph() {
         .attr('dy', '0.32em')
         .text(d => d);
 
-        
+    // Add x-axis label
+    svg.append('text')
+        .attr('x', width / 2)  // Center horizontally
+        .attr('y', margin.bottom + 465)  // Position below x-axis
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '17px')
+        .attr('fill', 'black')  // Set text color to grey
+        .style('font-weight', 'lighter')  // Make text bold
+        .text('Age');
+
+    // Add y-axis label
+    svg.append('text')
+        .attr('transform', 'rotate(-90)')  // Rotate for vertical text
+        .attr('y', margin.left - 65)  // Position left of y-axis
+        .attr('x', -(height / 2))  // Center vertically
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '17px')
+        .attr('fill', 'black')  // Set text color to grey
+        .style('font-weight', 'lighter')  // Make text bold
+        .text('Amount of Cases');
 }
