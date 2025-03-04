@@ -212,7 +212,7 @@ function createStreamGraph() {
 
     // Draw the legend
     const legend = svg.append('g')
-        .attr('transform', `translate(${width - margin.right + 20},${margin.top})`)
+        .attr('transform', `translate(${width - margin.right + 40},${margin.top})`)
         .selectAll('g')
         .data(optypes)
         .join('g')
@@ -245,11 +245,11 @@ function createStreamGraph() {
     // Add y-axis label
     svg.append('text')
         .attr('transform', 'rotate(-90)')  // Rotate for vertical text
-        .attr('y', margin.left - 65)  // Position left of y-axis
+        .attr('y', margin.left - 55)  // Position left of y-axis
         .attr('x', -(height / 2))  // Center vertically
         .attr('text-anchor', 'middle')
         .attr('font-size', '17px')
         .attr('fill', 'black')  // Set text color to grey
         .style('font-weight', 'lighter')  // Make text bold
-        .text('Amount of Cases');
+        .text('Number of Cases');
 }
