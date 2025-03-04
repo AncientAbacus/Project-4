@@ -3,14 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- D3.js Library -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
 
+  <!-- External Scripts -->
   <script type="module" src="main.js"></script>
   <script type="module" src="global.js"></script>
+
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
 
-  <title>Project 4 Visualization</title>
+  <!-- Favicon-->
+  <link rel="icon" type="image/png" href="images/hop.png">
+
+
+  <title>The Organ Trail</title>
 </head>
 <body>
+  <div class="header">
+    <h2 ><span id="teamname">Team ChatGTE</span> presents: <span id="title">The Organ Trail 🩸</span></h2>
+  </div>
+
+  <p>
+    Every year, <span id="emphasis">millions undergo surgery</span>, but the types of procedures performed 
+    aren’t distributed evenly across age groups. While younger patients might face orthopedic fixes from 
+    sports injuries, older adults are far more likely to need life-saving cardiovascular or gastrointestinal 
+    procedures.This interactive graphic reveals how surgical trends evolve with age—what types of operations are most 
+    common in different age groups, and what that says about the shifting health risks we face over time.<strong>Explore the data, click to uncover deeper insights, and see how medical intervention 
+    changes as we age.</strong>
+  </p>
+
+  <div id="stream"></div>
 </body>
 </html>

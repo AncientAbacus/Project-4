@@ -19,8 +19,8 @@ html {
 }
 
 body {
-  font: 100%/1.5 system-ui;
-  max-width: 100ch;
+  font: 100%/1.5 "Roboto", Arial, sans-serif;
+  max-width: 120ch;
   margin-inline: auto;
   padding: 1em;
   box-sizing: border-box;
@@ -276,4 +276,22 @@ p.hook {
   font-weight: normal; /* Keeps text at normal weight */
   line-height: 1.4;  /* Improves readability */
   max-width: 700px;  /* Prevents excessively wide text */
+}
+
+/* new formatting */
+div.header {
+  margin-top: .5em;
+  margin-bottom:.5em;
+  border-radius: 10px; /* Rounded corners */
+  background-color: white; /* Optional: Adds contrast */
+}
+
+
+#title{
+  color:crimson;
+}
+
+#emphasis{
+  color:crimson;
+  font-weight:700;
 }

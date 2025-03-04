@@ -16,20 +16,36 @@ const tooltip = d3.select('body')
 // load data-----------------------------------------------------------------------------------------
 async function loadData() {
     data = await d3.csv('data/viz_cases.csv', (row) => ({
-      ...row,
-        agebin : row.age_bin,
-        age : Number(row.age),
-        mortality : Number(row.mortality_rate),
-        sex : row.sex,
-        opname : row.opname,
-        optype : row.optype,
-        intraop_ebl : Number(row.intraop_ebl),
-
+        ...row,
+        caseid: row.caseid,
+        subjectid: row.subjectid,
+        age: Number(row.age),
+        sex: row.sex,
+        height: Number(row.height),
+        weight: Number(row.weight),
+        emop: row.emop,
+        department: row.department,
+        optype: row.optype,
+        dx: row.dx,
+        opname: row.opname,
+        approach: row.approach,
+        position: row.position,
+        ane_type: row.ane_type,
+        adm: row.adm,
+        dis: row.dis,
+        age_bin:row.age_bin,
+        icu_days: Number(row.icu_days),
+        case_duration: Number(row.case_duration),
+        ane_duration: Number(row.ane_duration),
+        op_duration: Number(row.op_duration),
+        mortality: Number(row.mortality_rate),
+        intraop_ebl: Number(row.intraop_ebl)
     }));
+    
 
     console.log(data);
-    displayStats();
-    createStackedBar(data);
+    // displayStats();
+    createStreamGraph(data);
   }
 
 
@@ -37,6 +53,9 @@ async function loadData() {
 document.addEventListener('DOMContentLoaded', async () => {
 await loadData();
 });
+
+// streamgraph -------------------------------------------------------------------------------------
+
 
 // display stats ------------------------------------------------------------------------------------
 function displayStats() {  
@@ -83,13 +102,13 @@ function updateStats(filteredData) {
     });
 }
 // create stacked bar --------------------------------------------------------------------------------
-function createStackedBar(data) {
+function createStreamGraph(data) {
     const width = 1000;
     const height = 600;
     const margin = { top: 20, right: 30, bottom: 40, left: 40 };
 
     const svg = d3
-        .select('#chart')
+        .select('#stream')
         .append('svg')
         .attr('viewBox', `0 0 ${width} ${height}`)
         .style('overflow', 'visible');
