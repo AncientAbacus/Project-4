@@ -15,6 +15,12 @@ const tooltip = d3.select('body')
     .append('div')
     .attr('class', 'tooltip');
 
+
+// scroll widget ------------------------------------------------------------------------------------
+window.addEventListener('scroll', () => {
+    document.body.style.setProperty('--scroll', window.pageYOffset / (document.body.offsetHeight - window.innerHeight));
+  }, false);
+
 // load data-----------------------------------------------------------------------------------------
 async function loadData() {
     data = await d3.csv('data/cases_clean.csv', (row) => ({
@@ -366,7 +372,7 @@ function createSurgicalViz() {
 }
 
 function updateTopPlot(data, position, durationType) {
-    const margin = {top: 40, right: 30, bottom: 40, left: 50};
+    const margin = { top: 40, right: 30, bottom: 40, left: 50 };
     const width = 800 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
@@ -385,13 +391,13 @@ function updateTopPlot(data, position, durationType) {
     // Create histogram bins
     const histogram = d3.histogram()
         .domain([0, d3.max(filteredData)])
-        .thresholds(20);  // 20 bins for duration distribution
+        .thresholds(20); // 20 bins for duration distribution
 
     const bins = histogram(filteredData);
 
     // Clear existing plot
     d3.select("#topPositionPlot").selectAll("*").remove();
-    
+
     // Create new SVG
     const svg = d3.select("#topPositionPlot")
         .append("svg")
@@ -409,6 +415,51 @@ function updateTopPlot(data, position, durationType) {
         .domain([0, d3.max(bins, d => d.length)])
         .range([height, 0]);
 
+    // Draw X-Axis
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x).ticks(10).tickFormat(d => `${d}m`))
+        .selectAll("text")
+        .style("font-family", "Sora")
+        .style("font-size", "11px");
+
+    // Draw Y-Axis
+    svg.append("g")
+        .call(d3.axisLeft(y).ticks(10))
+        .selectAll("text")
+        .style("font-family", "Sora")
+        .style("font-size", "11px");
+
+    // Add X-Axis Grid Lines
+    svg.append("g")
+        .attr("class", "x-axis-grid")
+        .attr("transform", `translate(0,${height})`)
+        .call(
+            d3.axisBottom(x)
+                .ticks(10)
+                .tickSize(-height)
+                .tickFormat("")
+        )
+        .selectAll("line")
+        .style("stroke", "lightgrey")
+        .style("stroke-opacity", 0.2);
+
+    // Add Y-Axis Grid Lines
+    svg.append("g")
+        .attr("class", "y-axis-grid")
+        .call(
+            d3.axisLeft(y)
+                .ticks(10)
+                .tickSize(-width)
+                .tickFormat("")
+        )
+        .selectAll("line")
+        .style("stroke", "lightgrey")
+        .style("stroke-opacity", 0.2);
+
+    // Remove axis domain lines (spines)
+    svg.selectAll(".domain").remove();
+
     // Add bars
     svg.selectAll("rect")
         .data(bins)
@@ -419,45 +470,28 @@ function updateTopPlot(data, position, durationType) {
         .attr("y", d => y(d.length))
         .attr("height", d => height - y(d.length))
         .attr("fill", "#69b3a2")
-        .on("mouseover", function(event, d) {
+        .on("mouseover", function (event, d) {
             d3.select(this).attr("opacity", 0.8);
             svg.append("text")
                 .attr("class", "tooltip")
-                .attr("x", x(d.x0) + (x(d.x1) - x(d.x0))/2)
+                .attr("x", x(d.x0) + (x(d.x1) - x(d.x0)) / 2)
                 .attr("y", y(d.length) - 5)
                 .attr("text-anchor", "middle")
+                .style("font-size", "12px")
                 .text(`${d.length} cases: ${Math.round(d.x0)}-${Math.round(d.x1)} mins`);
         })
-        .on("mouseout", function() {
+        .on("mouseout", function () {
             d3.select(this).attr("opacity", 1);
             svg.selectAll(".tooltip").remove();
         });
 
-    // Add axes
-    svg.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x).ticks(10))
-        .append("text")
-        .attr("x", width/2)
-        .attr("y", 35)
-        .attr("fill", "black")
-        .attr("class", "x-axis-label")
-        .text(`${durationLabel} Duration (minutes)`);
-
-    svg.append("g")
-        .call(d3.axisLeft(y))
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", -40)
-        .attr("x", -height/2)
-        .attr("fill", "black")
-        .text("Frequency");
-
     // Add title
     svg.append("text")
-        .attr("x", width/2)
-        .attr("y", -margin.top/2)
+        .attr("x", width / 2)
+        .attr("y", -margin.top / 2)
         .attr("text-anchor", "middle")
         .attr("class", "plot-title")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
         .text(`${durationLabel} Duration Distribution for ${position} Position`);
 }

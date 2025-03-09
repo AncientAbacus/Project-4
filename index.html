@@ -32,6 +32,12 @@
 </head>
 
 <body>
+  <!-- scroll widget-->
+  <svg width="50" height="50" viewBox="0 0 24 24" class="rotate" fill="crimson">
+    <path d="M19 10H14V5H10V10H5V14H10V19H14V14H19V10Z" />
+  </svg>
+
+  <!-- rest of code-->
       <div class="header">
         <h2 ><span id="teamname">Team ChatGTE</span> presents: <span id="title">The Organ Trail 🩸</span></h2>
       </div>
@@ -70,18 +76,16 @@
         
       </p>
 
-      <h4>Operation Types</h4>
+      <h4>What operations are most common?</h4>
       <div id="stream"></div>
 
-      <p>In this visualization, we observe how the types of surgical procedures vary significantly 
-        across different age groups. The data reveals that while younger patients often undergo procedures 
-        related to orthopedic and trauma care, older individuals represent a larger proportion of surgeries. 
-        Particularly notable are the higher frequencies of procedures such as biliary/pancreatic, colorectal, 
-        breast, and stomach surgeries, which are more common among the elderly.
+      <p>Here, it's clear to see that different operations (and operations in general) are more common at different ages. While younger patients mostly undergo minor resections and transplantations,  
+        older individuals see a higher frequencies of procedures such as biliary/pancreatic, colorectal, 
+        breast, and stomach (while also making up the vast majority of surgeries in our dataset).
       </p>
       <!-- Add new section for surgical positions -->
       <div class="surgical-position-viz">
-        <h4>Surgical Positions Analysis</h4>
+        <h4>How do surgical positions change how we experience surgery?</h4>
         <p class="viz-description">
           This visualization combines operation duration analysis with surgical position illustrations. 
           The top plot shows the distribution of three types of durations for the selected position, 
