@@ -49,10 +49,9 @@ async function loadData() {
         intraop_ebl: Number(row.intraop_ebl)
     }));
     
-
-    console.log(data);
     // displayStats();
-    createStreamGraph();
+    // createStreamGraph();
+    createRidgeline();
     createSurgicalPositionViz();
     createSurgicalViz();
   }
@@ -108,6 +107,144 @@ function updateStats(filteredData) {
         dl.append('dd').text(value.length);
     });
 }
+
+// create ridgeline ---------------------------------------------------------------------
+function createRidgeline() {
+    // Filter data to ensure there is valid optype and age
+    data = data.filter(d => d.optype && d.age != null); 
+    const width = 1000;
+    const height = 500;
+    const margin = { top: 20, right: 30, bottom: 40, left: 110 };
+
+    const svg = d3
+        .select('#stream')
+        .append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .attr('class', 'ridgeline')
+        .append('g')
+        .attr('transform', `translate(${margin.left}, ${margin.top})`)
+        .style('overflow', 'visible');;
+
+    // Get the distinct values of optype (categories)
+    const optypes = Array.from(new Set(data.map(d => d.optype))).sort(d3.ascending);
+
+    // Define the kernel density estimator function
+    function kernelDensityEstimator(kernel, X) {
+        return function (V) {
+            return X.map(function (x) {
+                return [x, d3.mean(V, function (v) { return kernel(x - v); })];
+            });
+        };
+    }
+
+    // Kernel function for Epanechnikov kernel (used for density estimation)
+    function kernelEpanechnikov(k) {
+        return function (v) {
+            return Math.abs(v /= k) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+        };
+    }
+
+    // Find the min and max age in the data
+    const minAge = d3.min(data, d => d.age);
+    const maxAge = d3.max(data, d => d.age);
+
+    // Set up scales for axes
+    const xScale = d3.scaleLinear()
+        .domain([minAge, maxAge])  // Set the domain based on the min and max age
+        .range([0, width]);
+
+    const yCategoryScale = d3.scaleBand()
+        .domain(optypes)
+        .range([0, height])
+        .padding(0.1);  // Reduce the padding to decrease the gap between ridgelines
+    
+
+    // Compute kernel density estimation for each optype (category)
+    const kde = kernelDensityEstimator(kernelEpanechnikov(7), xScale.ticks(100));  // 100 ticks for density estimation
+    const allDensity = [];
+    
+    optypes.forEach(key => {
+        const ageData = data.filter(d => d.optype === key).map(d => d.age);
+        if (ageData.length > 0) {
+            const density = kde(ageData);
+            allDensity.push({ key, density });
+        } else {
+            console.warn(`No data for optype: ${key}`);
+        }
+    });
+
+    // Define yScale for density values AFTER allDensity is populated
+    const yScale = d3.scaleLinear()
+        .domain([0, d3.max(allDensity, d => d3.max(d.density, v => v[1]))])
+        .range([yCategoryScale.bandwidth(), 0]);  // Invert the range for proper alignment
+
+    // Add areas (the ridgelines)
+    svg.selectAll('.area')
+        .data(allDensity)
+        .join('path')
+        .attr('transform', function(d) {
+            // Position each ridgeline at the correct y-coordinate for its optype
+            return `translate(0, ${yCategoryScale(d.key)})`;
+        })
+        .attr('fill', d => colorScale(d.key))
+        .attr('stroke', '#000')
+        .attr('stroke-width', 1)
+        .attr('opacity', 0.8)
+        .attr('d', function(d) {
+            const line = d3.line()
+                .curve(d3.curveBasis)
+                .x(function (d) { return xScale(d[0]); })  // X position based on age
+                .y(function (d) { return 1.7*yScale(d[1]) - 20; });  // Y position based on density
+
+            return line(d.density);
+        });
+
+    // Add x-axis
+    svg.append('g')
+        .attr('class','ridge-x')
+        .attr('transform', `translate(0, ${height})`)
+        .call(d3.axisBottom(xScale));
+
+    // Add y-axis for categories
+    const yAxis = svg.append('g')
+        .call(d3.axisLeft(yCategoryScale))
+        .attr('class','ridge')
+        .attr('transform', `translate(-10, 0)`);  // Adjust x position for better alignment
+
+    // Adjust positioning of tick labels to align them with the bottom of the ridgelines
+    yAxis.selectAll('.tick text')
+        .style('font-family', 'Sora')
+        .style('font-size', '11px')
+        .attr('transform', `translate(0, ${yCategoryScale.bandwidth() / 2})`); // Center labels vertically in the band
+
+    // Add x-axis label
+    svg.append('text')
+        .attr('x', width / 2)
+        .attr('y', height + margin.bottom - 10)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '17px')
+        .attr('fill', 'black')
+        .style('font-weight', 'lighter')
+        .text('Age');
+
+    // Add y-axis label
+    svg.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', margin.left-230)
+        .attr('x', -(height / 2))
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '17px')
+        .attr('fill', 'black')
+        .style('font-weight', 'lighter')
+        .text('Operation Type');
+
+    // Change the font of the axis ticks to Roboto
+    svg.selectAll('.tick text')
+    .style('font-family', 'Sora')
+    .style('font-size', '11px');  // Optional: adjust font size for readability
+}
+
 // create STREAMGRAPH --------------------------------------------------------------------------------
 function createStreamGraph() {
     const width = 1000;
@@ -143,6 +280,8 @@ function createStreamGraph() {
         .domain(ageBinKeys)  // Keep this as is for correct axis order
         .range([margin.left, width - margin.right])
         .padding(0.1);
+
+    console.log(xScale.domain());
 
     const yScale = d3.scaleLinear()
         .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])

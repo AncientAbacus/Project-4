@@ -25,6 +25,7 @@ body {
   padding: 1em;
   box-sizing: border-box;
   accent-color: var(--color-accent);
+  
 }
 
 nav ul {
@@ -474,3 +475,20 @@ svg.rotate {
   }
 }
 
+#stream {
+  width: 90%;  /* Adjust to a percentage for dynamic width */
+  max-width: 1000px; /* Still respect max width */
+  height: auto;
+}
+
+.ridge .tick line{
+  visibility:hidden;
+}
+
+.ridge .domain{
+  visibility: hidden;
+}
+
+.ridge-x .domain{
+  visibility: hidden;
+}
