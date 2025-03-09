@@ -49,7 +49,7 @@
         and the impact of these procedures on mortality. 
       </p>
 
-      <div class="header">
+      <!-- <div class="header">
         <h2>[PROTOTYPE]: Our progress so far...</h2>
         <span id="emphasis">1. What have you done so far?</span>
         <p>So far, we have developed two interactive visualizations. The first is a streamgraph that shows the 
@@ -64,7 +64,7 @@
           of the data will be a significant challenge. We will take peer reviews into considersation and ensure
           that our visualization is both easy and interesting to read. Part of these next steps will include incorporating
           chemical results and correlating them with diagnoses and surgery types. </p>
-      </div>
+      </div> -->
 
       <p>
         
@@ -79,30 +79,31 @@
         Particularly notable are the higher frequencies of procedures such as biliary/pancreatic, colorectal, 
         breast, and stomach surgeries, which are more common among the elderly.
       </p>
-
-      <!--just some ideas for more-->
-      <div id ="deadly"></div>
-      <!--mayve we add a graph that lets you vary some variables (like type of surgery, age, sex, and showcase mortality)-->
-      <div id="testyourmortality"></div>
-      
       <!-- Add new section for surgical positions -->
       <div class="surgical-position-viz">
-          <h4>Surgical Positions Analysis</h4>
-          <p class="viz-description">
-              This visualization combines operation duration analysis with surgical position illustrations. 
-              The top plot shows the distribution of three types of durations for the selected position, 
-              helping understanding of typical procedure lengths. The bottom diagram illustrates 
-              the corresponding patient positioning technique. Select different positions from the 
-              dropdown menu to explore various surgical approaches and their associated timing patterns.
-          </p>
+        <h4>Surgical Positions Analysis</h4>
+        <p class="viz-description">
+          This visualization combines operation duration analysis with surgical position illustrations. 
+          The top plot shows the distribution of three types of durations for the selected position, 
+          helping understanding of typical procedure lengths. The bottom diagram illustrates 
+          the corresponding patient positioning technique. <span id='emphasis'>Select different positions from the 
+          dropdown menu to explore various surgical approaches and their associated timing patterns.</span>
+        </p>
+        <div class = "surgical-position-align">
           <div class="position-dropdown"></div>
           <div class="position-plots">
               <div id="topPositionPlot"></div>
               <div id="bottomPositionPlot"></div>
           </div>
+        </div>        
           <p class="viz-description">
             Image source: <a href="https://nurseslabs.com/patient-positioning/">NursesLabs</a>
         </p>
       </div>
+
+      <!--mayve we add a graph that lets you vary some variables (like type of surgery, age, sex, and showcase mortality)-->
+      <h4>Test Your Mortality!</h4>
+
+      <div id="testyourmortality"></div>
 </body>
 </html>

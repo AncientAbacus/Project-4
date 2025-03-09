@@ -20,7 +20,7 @@ html {
 
 body {
   font: 100%/1.5 "Jakarta Sans", Arial, sans-serif;
-  max-width: 105ch;
+  max-width: 100ch;
   margin-inline: auto;
   padding: 1em;
   box-sizing: border-box;
@@ -109,11 +109,15 @@ h3 {
   font-size: 150%;
 }
 h4 {
+  background-color: #f3f0f0b4; /* Light grey background */
+  border-radius: 15px; /* Rounded corners */
   font-size: 125%;
-  text-decoration: underline; 
   text-align: center;
   width: 100%;
-  margin-bottom: 20px;
+  padding:8px;
+  margin-bottom: 10px;
+  display:inline-block;
+
 }
 h5 {
   font-size: 110%;
@@ -297,7 +301,7 @@ div.header {
 }
 
 #emphasis{
-  color:crimson;
+  color: crimson;
   font-weight:700;
   
 }
@@ -325,22 +329,30 @@ div.header {
   margin: 0 5px; /* Spacing between each name */
   opacity: 0.7; /* Slightly faded look */
 }
+span.name {
+  display: inline-block; /* Ensures scaling works properly */
+  transition: transform 0.2s ease-in-out; /* Smooth scaling animation */
+}
+
+span.name:hover {
+  transform: scale(1.1);
+}
+
 
 .surgical-position-viz {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    /* padding: 20px; */
 }
 
 .viz-description {
-    width: 80%;
-    margin: 20px auto;
+    width: 100%;
+    /* margin: 20px auto; */
     line-height: 1.6;
     color: black;
-    font-family: 'Sora', sans-serif;
+    font-family: Arial, sans-serif;
     text-align: left;
 }
 
@@ -370,7 +382,7 @@ div.header {
 #topPositionPlot svg {
     background: white;
     border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    /* box-shadow: 0 2px 4px rgba(0,0,0,0.1); */
 }
 
 #positionSelect {
