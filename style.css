@@ -667,7 +667,7 @@ svg.rotate {
 #testyourmortality {
   display: grid;
   grid-template-columns: 1fr 1fr; /* Create two equal-width columns */
-  grid-gap: 10px; /* Space between grid items */
+  column-gap: 10px; /* Space between grid items */
   align-items: center; /* Center the content vertically */
 }
 
