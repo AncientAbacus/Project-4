@@ -705,7 +705,7 @@ svg.rotate {
   background-color: #f3f0f0b4; /* Light grey background */
   border-radius: 15px; /* Rounded corners */
   display: inline-block; /* Ensures background only covers text */
-  font-size: 90%;
+  font-size: 110%;
   width: auto; /* Allows width to match text content */
   white-space: nowrap; /* Prevents breaking into multiple lines */
 }
@@ -717,10 +717,10 @@ svg.rotate {
 #mortalitysub1 {
   padding: 8px;
   margin: 0 auto; /* Centering trick for inline-block */
-  background-color: #f3f0f0b4;
   border-radius: 15px;
   display: inline-block;
-  font-size: 90%;
+  font-weight:lighter;
+  font-size: 110%;
   text-align: center;
   max-width: 60%;
   white-space: nowrap;
@@ -756,7 +756,8 @@ div#prognosis{
   background-color:#f3f0f0b4;
   padding:5px;
   border-radius: 15px;
-  margin-bottom:20px;
+  margin-bottom:50px;
+  margin-top: 40px;
   width:100%;
 }
 
@@ -764,6 +765,14 @@ h4#mortalitytitle{
   background-color: crimson;
   color:white;
   font-size:155%;
+}
+
+#survivability{
+  background-color:white;
+  border-radius:15px;
+  width:60%;
+  padding:8px;
+  display:inline-block;
 }
 
 h5#mort{

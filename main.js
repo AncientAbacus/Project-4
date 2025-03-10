@@ -726,15 +726,15 @@ function createDensity(data, feature, chartid) {
     let margin, width, height;
  
     if (feature === 'optype') {
-        margin = { top: 40, right: 30, bottom: 40, left: 70 };
+        margin = { top: 10, right: 30, bottom: 40, left: 100 };
         width = 900 - margin.left - margin.right;
         height = 500 - margin.top - margin.bottom;
     } else if (feature === 'opname') {
-        margin = { top: 40, right: 30, bottom: 40, left: 180 };
-        width = 800 - margin.left - margin.right;
-        height = 600 - margin.top - margin.bottom;
+        margin = { top: 10, right: 30, bottom: 40, left: 180 };
+        width = 1000 - margin.left - margin.right;
+        height = 700 - margin.top - margin.bottom;
     } else {
-        margin = { top: 40, right: 30, bottom: 40, left: 40 };
+        margin = { top: 10, right: 40, bottom: 40, left: 40 };
         width = 500 - margin.left - margin.right;
         height = 400 - margin.top - margin.bottom;
     }
@@ -781,11 +781,14 @@ function createDensity(data, feature, chartid) {
     }
 
     if (feature === 'optype') {
-        document.getElementById('expandable').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('secondary').scrollIntoView({ behavior: 'smooth' });
     } else if (feature === 'opname') {
-        document.getElementById('expandable2').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('mort').scrollIntoView({ behavior: 'smooth' });
     } else if (feature === 'age') {
         document.getElementById('expandable3').scrollIntoView({ behavior: 'smooth' });
+    }
+    else if (feature === 'sex') {
+        document.getElementById('prognosis').scrollIntoView({ behavior: 'smooth' });
     }
 
     const totalCount = d3.sum(featureCounts, d => d.count);
@@ -798,7 +801,7 @@ function createDensity(data, feature, chartid) {
     const numYLabels = densityData.length;
 
     // Set a base font size and scale it down as more labels are added
-    const baseFontSize = 8;
+    const baseFontSize = 9;
     const minFontSize = 7;
     const yFontSize = Math.max(minFontSize, baseFontSize - 0.2 * (numYLabels - 10)); // Adjust scaling
 
@@ -877,6 +880,8 @@ function createDensity(data, feature, chartid) {
 
             // conditional text
             let difference = (averageDuration -avgDuration).toFixed(2);
+            d3.select('#survivability').html('');
+
             if(difference < 0){
                 difference = Math.abs(difference);
                 insertProgText('#survivability', '',`${avgDuration.toFixed(2)} hours`,`, which is ${difference} hours longer than the average.`);
@@ -928,7 +933,7 @@ function insertText(container, text) {
 
     d3.select(container)
         .append("h5")
-        .attr('id', 'mortalitysub')
+        .attr('id', 'mort')
         .classed('mortalityverdict', container === "#survivability") // Conditionally set class
         .text(text);
 }
