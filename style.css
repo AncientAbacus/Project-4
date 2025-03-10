@@ -735,3 +735,27 @@ svg.rotate {
 .density-y .domain{
   visibility: hidden;
 }
+
+h5#mortalitysub.mortalityverdict {
+  background-color: white;
+  font-size:125%;
+}
+
+div#prognosis{
+  background-color:#f3f0f0b4;
+  padding:5px;
+  border-radius: 15px;
+  margin-bottom:20px;
+  width:100%;
+}
+
+h4#mortalitytitle{
+  background-color: crimson;
+  color:white;
+  font-size:155%;
+}
+
+h5#mort{
+  font-weight:lighter;
+  margin-bottom:4px;
+}
