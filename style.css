@@ -444,9 +444,9 @@ rect:hover {
 }
 
 .duration-btn.active {
-    background: #69b3a2;
+    background: crimson;
     color: white;
-    border-color: #498c7b;
+    border-color: crimson;
 }
 
 .duration-btn:hover {
@@ -454,7 +454,7 @@ rect:hover {
 }
 
 .duration-btn.active:hover {
-    background: #498c7b;
+    background: rgb(152, 13, 41);
 }
 
 svg.rotate {
