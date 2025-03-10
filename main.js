@@ -710,7 +710,7 @@ function testMortality() {
 
 // Function to create the density chart based on the feature and chart container
 function createDensity(data, feature, chartid) {
-    const margin = { top: 40, right: 30, bottom: 40, left: 50 };
+    const margin = { top: 0, right: 30, bottom: 20, left: 50 };
     const width = 500 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
@@ -817,6 +817,7 @@ function createDensity(data, feature, chartid) {
             if (feature === 'optype') {
                 d3.select('#expandable').html('');
                 insertText('#expandable', `What specific operation are you undergoing?`);
+                // insertText2('#primarysub', `You selected: ${key}`);
                 createDensity(filteredData, 'opname', 'expandable');
             } else if (feature === 'opname') {
                 d3.select('#expandable2').html('');
@@ -839,5 +840,17 @@ function insertText(container, text) {
 
     d3.select(container)
         .append("h5")
+        .attr('id','mortalitysub')
+        .text(text);
+}
+
+function insertText2(container, text) {
+    d3.select(container)
+        .selectAll("p")
+        .remove(); 
+
+    d3.select(container)
+        .append("p")
+        .attr("class","mortalitysub")
         .text(text);
 }
