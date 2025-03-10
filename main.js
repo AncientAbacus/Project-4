@@ -710,11 +710,21 @@ function testMortality() {
 
 // Function to create the density chart based on the feature and chart container
 function createDensity(data, feature, chartid) {
-    const maxWidth = 500;  // Set maximum width
-    const maxHeight = 300; // Set maximum height
-    const margin = { top: 20, right: 50, bottom: 40, left: 80 }; // Adjust for axis labels
-    const width = Math.min(maxWidth, 600) - margin.left - margin.right;
-    const height = Math.min(maxHeight, 350) - margin.top - margin.bottom;
+    let margin, width, height;
+
+    if (feature === 'optype') {
+        margin = { top: 40, right: 30, bottom: 40, left: 70 };
+        width = 900 - margin.left - margin.right;
+        height = 500 - margin.top - margin.bottom;
+    } else if (feature === 'opname') {
+        margin = { top: 40, right: 30, bottom: 40, left: 180 };
+        width = 800 - margin.left - margin.right;
+        height = 600 - margin.top - margin.bottom;
+    } else {
+        margin = { top: 40, right: 30, bottom: 40, left: 40 };
+        width = 500 - margin.left - margin.right;
+        height = 400 - margin.top - margin.bottom;
+    }
     
 
     const primaryChart = d3.select(`#${chartid}`)
