@@ -704,6 +704,7 @@ function updateTopPlot(data, position, durationType) {
 // case duration???? ------------------------------------------------------------------------------------------
 // Function to initialize the first density chart (for optype feature)
 function testMortality() {
+    const averageDuration = d3.mean(data, d => d.case_duration);
     createDensity(data, 'optype', 'selectable');
 }
 
@@ -830,11 +831,11 @@ function createDensity(data, feature, chartid) {
         
 }
 
-// Utility function to dynamically insert an h5 element
+// utlity function
 function insertText(container, text) {
     d3.select(container)
         .selectAll("h5")
-        .remove(); // Remove existing h5 if any
+        .remove(); 
 
     d3.select(container)
         .append("h5")
