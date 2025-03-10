@@ -724,6 +724,7 @@ function createDensity(data, feature, chartid) {
         width = 500 - margin.left - margin.right;
         height = 400 - margin.top - margin.bottom;
     }
+    
 
     const primaryChart = d3.select(`#${chartid}`)
         .append("svg")
