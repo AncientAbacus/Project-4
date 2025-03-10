@@ -499,7 +499,7 @@ svg.rotate {
 }
 
 
-/* Full-screen opening section */
+/* each page --------------------------------------------------------------------------------------- */
 .opening {
   height: 80ch; /* Full viewport height */
   width:100vw;
@@ -515,7 +515,7 @@ svg.rotate {
   margin-bottom:50px; 
 }
 
-.opening2 {
+.opening2, .opening3{
   height: 82ch; /* Full viewport height */
   width:100vw;
   max-width: 100ch;
@@ -528,9 +528,36 @@ svg.rotate {
   box-sizing: border-box;
 }
 
+.opening4{
+  margin-top:100px;
+  height: 140ch; /* Full viewport height */
+  width:100vw;
+  max-width: 100ch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: white; /* Adjust as needed */
+  color: black;
+  box-sizing: border-box;
+}
+
+.opening5{
+  margin-top:150px;
+  height: 100ch; /* Full viewport height */
+  width:100vw;
+  max-width: 100ch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: white; /* Adjust as needed */
+  color: black;
+  box-sizing: border-box;
+}
 
 
-
+/* name formatting ------------------------------------------------------------------------ */
 #teamname {
   opacity:0;
   animation: fadeIn 3s forwards;
@@ -574,7 +601,7 @@ svg.rotate {
   }
 }
 
-
+/* scroll arrow formatting ---------------------------------------------------------------- */
 .scroll-arrow {
   margin-top: 60px;
   opacity: 0; /* Start with the arrow invisible */
@@ -589,11 +616,32 @@ svg.rotate {
 }
 
 
+.scroll-arrow3 {
+  margin-top: 20px;
+  animation: bounce 2s infinite ease-in-out; /* Apply both animations */
+  animation-delay: 5.2s; /* Delay for both animations */
+}
+
+.scroll-arrow4 {
+  margin-top: 20px;
+  animation: bounce 2s infinite ease-in-out; /* Apply both animations */
+  animation-delay: 5.2s; /* Delay for both animations */
+}
+
+
 .scroll-arrow:hover {
   cursor: pointer;
 }
 
 .scroll-arrow2:hover {
+  cursor: pointer;
+}
+
+.scroll-arrow3:hover {
+  cursor: pointer;
+}
+
+.scroll-arrow4:hover {
   cursor: pointer;
 }
 
@@ -615,6 +663,7 @@ svg.rotate {
   }
 }
 
+/* test your mortality css ---------------------------------------------------------------------*/
 #testyourmortality {
   display: grid;
   grid-template-columns: 1fr 1fr; /* Create two equal-width columns */

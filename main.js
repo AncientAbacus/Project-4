@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadData();      
 });
 
+// scrolling behavior ----------------------------------------------------------------------------------------------
 // Wait for the DOM to fully load
 document.addEventListener("DOMContentLoaded", function() {
     // Get the scrollArrow and opening2 elements
@@ -94,6 +95,37 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
   
+
+  document.addEventListener("DOMContentLoaded", function() {
+    // Get the scrollArrow and opening2 elements
+    const scrollArrow3 = document.getElementById("scrollArrow3");
+    const start = document.getElementById("opening4");
+  
+    // Add event listener to scrollArrow for the click event
+    scrollArrow3.addEventListener("click", function() {
+      // Scroll to the opening2 element smoothly
+      start.scrollIntoView({
+        behavior: "smooth",  // Smooth scrolling
+        block: "start"       // Align to the top of the viewport
+      });
+    });
+  });
+  
+
+  document.addEventListener("DOMContentLoaded", function() {
+    // Get the scrollArrow and opening2 elements
+    const scrollArrow4 = document.getElementById("scrollArrow4");
+    const start = document.getElementById("opening5");
+  
+    // Add event listener to scrollArrow for the click event
+    scrollArrow4.addEventListener("click", function() {
+      // Scroll to the opening2 element smoothly
+      start.scrollIntoView({
+        behavior: "smooth",  // Smooth scrolling
+        block: "start"       // Align to the top of the viewport
+      });
+    });
+  });
   
 
 // create ridgeline ---------------------------------------------------------------------
