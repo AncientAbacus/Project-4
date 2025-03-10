@@ -664,15 +664,11 @@ svg.rotate {
 }
 
 /* test your mortality css ---------------------------------------------------------------------*/
-#testyourmortality1 {
-  display: grid;
-  align-items: center; /* Center the content vertically */
-}
-
-#testyourmortality2 {
+#testyourmortality {
+  margin-top:30px;
   display: grid;
   grid-template-columns: 1fr 1fr; /* Create two equal-width columns */
-  column-gap: 50px; /* Space between grid items */
+  column-gap: 10px; /* Space between grid items */
   align-items: center; /* Center the content vertically */
 }
 
@@ -681,13 +677,7 @@ svg.rotate {
   text-align: center; /* Optionally center text */
 }
 
-#primary, #secondary{
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-#age, #sex {
+#primary, #secondary, #age, #sex {
   display: flex;
   flex-direction: column;
   gap: 10px; /* Add space between nested elements inside each section */
@@ -696,9 +686,6 @@ svg.rotate {
 #prognosis {
   grid-column: span 2; /* Span across both columns */
   text-align: center; /* Optionally center text */
-  font-family: 'Sora', sans-serif; /* Set font to Sora */
-  font-size: 20px; /* Set font size to 14px */
-  font-weight: 400; /* Set font weight to 600 */
 }
 
 #mortalitysub {
@@ -747,4 +734,28 @@ svg.rotate {
 
 .density-y .domain{
   visibility: hidden;
+}
+
+h5#mortalitysub.mortalityverdict {
+  background-color: white;
+  font-size:125%;
+}
+
+div#prognosis{
+  background-color:#f3f0f0b4;
+  padding:5px;
+  border-radius: 15px;
+  margin-bottom:20px;
+  width:100%;
+}
+
+h4#mortalitytitle{
+  background-color: crimson;
+  color:white;
+  font-size:155%;
+}
+
+h5#mort{
+  font-weight:lighter;
+  margin-bottom:4px;
 }

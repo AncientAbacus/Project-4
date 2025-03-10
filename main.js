@@ -722,30 +722,20 @@ function testMortality() {
 
 // Function to create the density chart based on the feature and chart container
 function createDensity(data, feature, chartid) {
-    let margin, width, height;
-
-    if (feature === 'optype') {
-        margin = { top: 40, right: 30, bottom: 40, left: 70 };
-        width = 900 - margin.left - margin.right;
-        height = 500 - margin.top - margin.bottom;
-    } else if (feature === 'opname') {
-        margin = { top: 40, right: 30, bottom: 40, left: 180 };
-        width = 800 - margin.left - margin.right;
-        height = 600 - margin.top - margin.bottom;
-    } else {
-        margin = { top: 40, right: 30, bottom: 40, left: 40 };
-        width = 500 - margin.left - margin.right;
-        height = 400 - margin.top - margin.bottom;
-    }
+    const maxWidth = 500;  // Set maximum width
+    const maxHeight = 300; // Set maximum height
+    const margin = { top: 20, right: 50, bottom: 40, left: 80 }; // Adjust for axis labels
+    const width = Math.min(maxWidth, 600) - margin.left - margin.right;
+    const height = Math.min(maxHeight, 350) - margin.top - margin.bottom;
     
 
     const primaryChart = d3.select(`#${chartid}`)
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", `translate(${margin.left}, ${margin.top})`)
-        .style('overflow', 'visible');
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)  // Ensure full space
+    .attr("height", height + margin.top + margin.bottom) // Ensure full space
+    .append("g")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
 
     let featureCounts = [];
 
@@ -779,46 +769,44 @@ function createDensity(data, feature, chartid) {
         }
     }
 
-    // Scroll to the next chart container
-    if (feature === 'optype') {
-        document.getElementById('expandable').scrollIntoView({ behavior: 'smooth' });
-    } else if (feature === 'opname') {
-        document.getElementById('expandable2').scrollIntoView({ behavior: 'smooth' });
-    } else if (feature === 'age') {
-        document.getElementById('expandable3').scrollIntoView({ behavior: 'smooth' });
-    }
-
     const totalCount = d3.sum(featureCounts, d => d.count);
     const densityData = featureCounts.map(d => ({
         key: d.key,
         density: d.count / totalCount
     }));
 
+    // Get number of unique y-axis values
+    const numYLabels = densityData.length;
+
+    // Set a base font size and scale it down as more labels are added
+    const baseFontSize = 8;
+    const minFontSize = 4;
+    const yFontSize = Math.max(minFontSize, baseFontSize - 0.2 * (numYLabels - 10)); // Adjust scaling
+
     const x = d3.scaleLinear()
-        .domain([0, d3.max(densityData, d => d.density)])
-        .range([0, width]);
+    .domain([0, d3.max(densityData, d => d.density)])
+    .range([0, width]);  // Restrict width to max 500px
 
     const y = d3.scaleBand()
         .domain(densityData.map(d => d.key))
-        .range([height, 0])
+        .range([height, 0])  // Restrict height to max 300px
         .padding(0.1);
 
     //axes
+// Remove x-axis since we are moving the density labels
     primaryChart.append("g")
         .attr("transform", `translate(0, ${height})`)
-        .attr("class","density-x")
+        .attr("class", "density-x")
         .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0%")))
-        .selectAll("text")
-        .style("font-family", "Sora")
-        .style("font-size", "10px");
+        .remove(); // This removes the x-axis labels
+
 
     primaryChart.append("g")
         .call(d3.axisLeft(y))
-        .attr("class","density-y")
+        .attr("class", "density-y")
         .selectAll("text")
         .style("font-family", "Sora")
-        .style("font-size", "7px")
-        //.call(wrap, margin.left - 10); // Call wrap function to wrap text
+        .style("font-size", `${yFontSize}px`);  // Dynamically adjust font size
 
     primaryChart.selectAll(".bar")
         .data(densityData)
@@ -832,22 +820,10 @@ function createDensity(data, feature, chartid) {
         .on('click', function(event) {
             const chartContainer = d3.select(this.parentNode); // Restrict selection to the clicked chart
         
-            chartContainer.selectAll('.bar').style('fill', "gray"); // Reset only bars in this chart
+            chartContainer.selectAll('.bar').style('fill', "black"); // Reset only bars in this chart
             d3.select(this).style('fill', 'crimson'); // Highlight clicked bar
         
             const key = d3.select(this).datum().key;
-            // Remove previous charts if they exist
-            if (feature === 'optype') {
-                d3.select('#expandable').html('');
-                d3.select('#expandable2').html('');
-                d3.select('#expandable3').html('');
-            } else if (feature === 'opname') {
-                d3.select('#expandable2').html('');
-                d3.select('#expandable3').html('');
-            } else if (feature === 'age') {
-                d3.select('#expandable3').html('');
-            }
-
             const filteredData = data.filter(d => {
                 if (feature === 'age') {
                     const binStart = Math.floor(d.age / 5) * 5;
@@ -857,20 +833,11 @@ function createDensity(data, feature, chartid) {
                 return d[feature] === key;
             });
         
-            function insertProgText(selector, textBefore, variableText, textAfter) {
-                const element = document.querySelector(selector);
-                if (!element) return;
-            
-                element.innerHTML = `${textBefore} <span style="color: crimson;">${variableText}</span> ${textAfter}`;
-            }
-            
-            // Compute avgDuration
             const avgDuration = filteredData.length > 0 
                 ? d3.mean(filteredData, d => d.case_duration) 
                 : 0;
-            
-            // Call insertText with the formatted structure
-            insertProgText('#prognosis', "Your case will probably take:", avgDuration.toFixed(2), "Hours");
+        
+            insertText('#survivability', `${avgDuration.toFixed(2)} Hours`);
         
             // Cascading logic
             if (feature === 'optype') {
@@ -888,33 +855,20 @@ function createDensity(data, feature, chartid) {
                 createDensity(filteredData, 'sex', 'expandable3');
             }
         });
-}
-
-// Utility function to wrap text
-function wrap(text, width) {
-    text.each(function() {
-        const text = d3.select(this),
-            words = text.text().split(/\s+/).reverse(),
-            lineHeight = 1.1, // ems
-            y = text.attr("y"),
-            dy = parseFloat(text.attr("dy")),
-            x = text.attr("x");
-        let word,
-            line = [],
-            lineNumber = 0,
-            tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+    
+    primaryChart.selectAll(".bar-label")
+        .data(densityData)
+        .join("text")
+        .attr("class", "bar-label")
+        .attr("x", d => x(d.density) + 5) // Position to the right of the bar
+        .attr("y", d => y(d.key) + y.bandwidth() / 2) // Center vertically within the bar
+        .attr("dy", "0.35em") // Align text properly
+        .style("font-family", "Sora")
+        .style("font-size", `${yFontSize}px`)
+        .style("fill", "black")
+        .text(d => d3.format(".0%")(d.density)); // Format as percentage
+    
         
-        while (word = words.pop()) {
-            line.push(word);
-            tspan.text(line.join(" "));
-            if (tspan.node().getComputedTextLength() > width) {
-                line.pop();
-                tspan.text(line.join(" "));
-                line = [word];
-                tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-            }
-        }
-    });
 }
 
 // utlity function
@@ -925,17 +879,8 @@ function insertText(container, text) {
 
     d3.select(container)
         .append("h5")
-        .attr('id','mortalitysub')
+        .attr('id', 'mortalitysub')
+        .classed('mortalityverdict', container === "#survivability") // Conditionally set class
         .text(text);
 }
 
-function insertText2(container, text) {
-    d3.select(container)
-        .selectAll("p")
-        .remove(); 
-
-    d3.select(container)
-        .append("p")
-        .attr("class","mortalitysub")
-        .text(text);
-}
