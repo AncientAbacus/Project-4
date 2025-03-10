@@ -576,7 +576,6 @@ function createSurgicalViz() {
 }
 
 function updateTopPlot(data, position, durationType) {
-    const margin = { top: 40, right: 30, bottom: 40, left: 50 };
     const width = 800 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
@@ -710,16 +709,28 @@ function testMortality() {
 
 // Function to create the density chart based on the feature and chart container
 function createDensity(data, feature, chartid) {
-    const margin = { top: 40, right: 30, bottom: 40, left: 50 };
-    const width = 500 - margin.left - margin.right;
-    const height = 300 - margin.top - margin.bottom;
+    let margin, width, height;
+
+    if (feature === 'optype') {
+        margin = { top: 40, right: 30, bottom: 40, left: 70 };
+        width = 900 - margin.left - margin.right;
+        height = 500 - margin.top - margin.bottom;
+    } else if (feature === 'opname') {
+        margin = { top: 40, right: 30, bottom: 40, left: 180 };
+        width = 800 - margin.left - margin.right;
+        height = 600 - margin.top - margin.bottom;
+    } else {
+        margin = { top: 40, right: 30, bottom: 40, left: 40 };
+        width = 500 - margin.left - margin.right;
+        height = 400 - margin.top - margin.bottom;
+    }
 
     const primaryChart = d3.select(`#${chartid}`)
         .append("svg")
-        .attr("width", width )
+        .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", `translate(${margin.left + margin.right}, ${margin.top})`)
+        .attr("transform", `translate(${margin.left}, ${margin.top})`)
         .style('overflow', 'visible');
 
     let featureCounts = [];
@@ -754,6 +765,15 @@ function createDensity(data, feature, chartid) {
         }
     }
 
+    // Scroll to the next chart container
+    if (feature === 'optype') {
+        document.getElementById('expandable').scrollIntoView({ behavior: 'smooth' });
+    } else if (feature === 'opname') {
+        document.getElementById('expandable2').scrollIntoView({ behavior: 'smooth' });
+    } else if (feature === 'age') {
+        document.getElementById('expandable3').scrollIntoView({ behavior: 'smooth' });
+    }
+
     const totalCount = d3.sum(featureCounts, d => d.count);
     const densityData = featureCounts.map(d => ({
         key: d.key,
@@ -774,13 +794,14 @@ function createDensity(data, feature, chartid) {
         .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0%")))
         .selectAll("text")
         .style("font-family", "Sora")
-        .style("font-size", "7px");
+        .style("font-size", "10px");
 
     primaryChart.append("g")
         .call(d3.axisLeft(y))
         .selectAll("text")
         .style("font-family", "Sora")
-        .style("font-size", "7px");
+        .style("font-size", "7px")
+        //.call(wrap, margin.left - 10); // Call wrap function to wrap text
 
     primaryChart.selectAll(".bar")
         .data(densityData)
@@ -794,10 +815,22 @@ function createDensity(data, feature, chartid) {
         .on('click', function(event) {
             const chartContainer = d3.select(this.parentNode); // Restrict selection to the clicked chart
         
-            chartContainer.selectAll('.bar').style('fill', "black"); // Reset only bars in this chart
+            chartContainer.selectAll('.bar').style('fill', "gray"); // Reset only bars in this chart
             d3.select(this).style('fill', 'crimson'); // Highlight clicked bar
         
             const key = d3.select(this).datum().key;
+            // Remove previous charts if they exist
+            if (feature === 'optype') {
+                d3.select('#expandable').html('');
+                d3.select('#expandable2').html('');
+                d3.select('#expandable3').html('');
+            } else if (feature === 'opname') {
+                d3.select('#expandable2').html('');
+                d3.select('#expandable3').html('');
+            } else if (feature === 'age') {
+                d3.select('#expandable3').html('');
+            }
+
             const filteredData = data.filter(d => {
                 if (feature === 'age') {
                     const binStart = Math.floor(d.age / 5) * 5;
@@ -807,11 +840,20 @@ function createDensity(data, feature, chartid) {
                 return d[feature] === key;
             });
         
+            function insertProgText(selector, textBefore, variableText, textAfter) {
+                const element = document.querySelector(selector);
+                if (!element) return;
+            
+                element.innerHTML = `${textBefore} <span style="color: crimson;">${variableText}</span> ${textAfter}`;
+            }
+            
+            // Compute avgDuration
             const avgDuration = filteredData.length > 0 
                 ? d3.mean(filteredData, d => d.case_duration) 
                 : 0;
-        
-            insertText('#prognosis', `Your case will probably take: ${avgDuration.toFixed(2)} Hours`);
+            
+            // Call insertText with the formatted structure
+            insertProgText('#prognosis', "Your case will probably take:", avgDuration.toFixed(2), "Hours");
         
             // Cascading logic
             if (feature === 'optype') {
@@ -828,7 +870,33 @@ function createDensity(data, feature, chartid) {
                 createDensity(filteredData, 'sex', 'expandable3');
             }
         });
+}
+
+// Utility function to wrap text
+function wrap(text, width) {
+    text.each(function() {
+        const text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            lineHeight = 1.1, // ems
+            y = text.attr("y"),
+            dy = parseFloat(text.attr("dy")),
+            x = text.attr("x");
+        let word,
+            line = [],
+            lineNumber = 0,
+            tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
         
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+            }
+        }
+    });
 }
 
 // utlity function
