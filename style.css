@@ -614,3 +614,26 @@ svg.rotate {
     transform: translateY(-5px); /* Moves up a little less */
   }
 }
+
+#testyourmortality {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Create two equal-width columns */
+  grid-gap: 10px; /* Space between grid items */
+  align-items: center; /* Center the content vertically */
+}
+
+#testyourmortality h4, #testyourmortality h5 {
+  grid-column: span 2; /* Make the headings span across both columns */
+  text-align: center; /* Optionally center text */
+}
+
+#primary, #secondary, #age, #sex {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Add space between nested elements inside each section */
+}
+
+#prognosis {
+  grid-column: span 2; /* Span across both columns */
+  text-align: center; /* Optionally center text */
+}
