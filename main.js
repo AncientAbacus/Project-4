@@ -54,6 +54,7 @@ async function loadData() {
     createRidgeline();
     createSurgicalPositionViz();
     createSurgicalViz();
+    testMortality();
   }
 
 
@@ -577,14 +578,14 @@ function createSurgicalViz() {
         });
 
     // Update dropdown event listener
-    dropdown.on("change", function() {
-        const selectedPosition = d3.select(this).property("value");
-        if (selectedPosition) {
-            updatePositionImage(selectedPosition);
-            const activeDurationType = d3.select(".duration-btn.active").datum().id;
-            updateTopPlot(data, selectedPosition, activeDurationType);
-        }
-    });
+    // dropdown.on("change", function() {
+    //     const selectedPosition = d3.select(this).property("value");
+    //     if (selectedPosition) {
+    //         updatePositionImage(selectedPosition);
+    //         const activeDurationType = d3.select(".duration-btn.active").datum().id;
+    //         updateTopPlot(data, selectedPosition, activeDurationType);
+    //     }
+    // });
 }
 
 function updateTopPlot(data, position, durationType) {
@@ -715,5 +716,211 @@ function updateTopPlot(data, position, durationType) {
 
 // mortality???? ------------------------------------------------------------------------------------------
 function testMortality(){
+// Establish svg size
+const margin = { top: 40, right: 30, bottom: 40, left: 50 };
+const width = 900 - margin.left - margin.right;
+const height = 300 - margin.top - margin.bottom;
+
+// Initialize primary chart
+const primaryChart = d3.select("#selectable")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`)
+    .style('overflow', 'visible');
+
+// Group data by optype and count frequencies
+const optypeCounts = d3.rollup(
+    data,
+    v => v.length, // Count the number of cases for each optype
+    d => d.optype // Group by optype
+);
+
+// Convert the map to an array of objects
+const optypeData = Array.from(optypeCounts, ([optype, count]) => ({ optype, count }));
+
+// Sort the data by count (descending)
+optypeData.sort((a, b) => d3.descending(a.count, b.count));
+
+// Normalize the counts to density (relative frequency)
+const totalCount = d3.sum(optypeData, d => d.count);  // Get total count
+const densityData = optypeData.map(d => ({
+    optype: d.optype,
+    density: d.count / totalCount // Normalize to density (0 to 1)
+}));
+
+// Set up scales
+const x = d3.scaleLinear()
+    .domain([0, d3.max(densityData, d => d.density)]) // Domain for normalized density (0 to 1)
+    .range([0, width]); // Map to the width of the chart
+
+const y = d3.scaleBand()
+    .domain(densityData.map(d => d.optype)) // Domain based on optypes
+    .range([height, 0]) // Map to the height of the chart
+    .padding(0.1); // Add some padding between bars
+
+// Add x-axis (representing density, showing percentage format)
+primaryChart.append("g")
+    .attr("transform", `translate(0, ${height})`)
+    .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0%"))) // Format as percentage
+    .selectAll("text")
+    .style("font-family", "Sora")
+    .style("font-size", "11px");
+
+// Add y-axis (for optypes)
+primaryChart.append("g")
+    .call(d3.axisLeft(y))
+    .selectAll("text")
+    .style("font-family", "Sora")
+    .style("font-size", "11px");
+
+// Add bars representing density
+primaryChart.selectAll(".bar")
+    .data(densityData)
+    .join("rect")
+    .attr("class", "bar")
+    .attr("x", 0) // Start bars at x = 0
+    .attr("y", d => y(d.optype)) // Position bars based on optype
+    .attr("width", d => x(d.density)) // Width of bars based on normalized density
+    .attr("height", y.bandwidth()) // Height of bars based on band scale
+    .attr("fill", "black") // Bar color
+    .attr("stroke", "black") // Bar border color
+    .attr("stroke-width", 1)
+    .on('click', function(event) {
+        d3.selectAll('.bar').style('fill', "black");
+        d3.select(this).style('fill', 'crimson');
+
+        const optype = d3.select(this).datum().optype; // Access 'optype' from the clicked bar's bound data
+        const filteredData = data.filter(d => d.optype === optype);
+        // console.log(filteredData);
+        d3.select('#expandable').html('');
+        opnameChart(filteredData);
+    });
+
+
+
+    // if bar clicked, expand second barplot for opname that is properly filtered by the bar selection
+    function opnameChart(data){
+        const secondaryChart = d3.select("#expandable")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`)
+        .style('overflow', 'visible');
+
+        const opnames = Array.from(new Set(data.map(d => d.opname))).sort(d3.descending);
+
+        // Group data by opname and count frequencies
+        const opnameCounts = d3.rollup(
+            data,
+            v => v.length, // Count the number of cases for each optype
+            d => d.opname // Group by optype
+        );
+
+        // Convert the map to an array of objects
+        const opnameData = Array.from(opnameCounts, ([opname, count]) => ({ opname, count }));
+
+        // Sort the data by count (descending)
+        opnameData.sort((a, b) => d3.descending(a.count, b.count));
+
+        // Normalize the counts to density (relative frequency)
+        const totalCount = d3.sum(opnameData, d => d.count);  // Get total count
+        const densityData = opnameData.map(d => ({
+            opname: d.opname,
+            density: d.count / totalCount // Normalize to density (0 to 1)
+        }));
+
+
+         // Set up scales
+        const x = d3.scaleLinear()
+        .domain([0, d3.max(densityData, d => d.density)]) // Domain for normalized density (0 to 1)
+        .range([0, width]); // Map to the width of the chart
+
+        const y = d3.scaleBand()
+            .domain(opnameData.map(d => d.opname)) // Domain based on optypes
+            .range([height, 0]) // Map to the height of the chart (invert for horizontal bars)
+            .padding(0.1); // Add some padding between bars
+
+        // Add x-axis
+        secondaryChart.append("g")
+            .attr("transform", `translate(0, ${height})`)
+            .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0%"))) // Format as percentage
+            .selectAll("text")
+            .style("font-family", "Sora")
+            .style("font-size", "11px");
+
+        // Add y-axis
+        secondaryChart.append("g")
+            .call(d3.axisLeft(y))
+            .selectAll("text")
+            .style("font-family", "Sora")
+            .style("font-size", "11px");
+
+        // Add bars
+        secondaryChart.selectAll(".bar")
+            .data(opnameData)
+            .join("rect")
+            .attr("class", "bar")
+            .attr("x", 0) // Start bars at x = 0
+            .attr("y", d => y(d.opname)) // Position bars based on optype
+            .attr("width", d => x(d.density)) // Width of bars based on normalized density
+            .attr("height", y.bandwidth()) // Height of bars based on band scale
+            .attr("fill", "black") // Bar color
+            .attr("stroke", "black") // Bar border color
+            .attr("stroke-width", 1)
+            .on('click', function(event) {
+                d3.selectAll('.bar').style('fill',"black")
+                d3.select(this).style('fill', 'crimson');
+
+                // const optype = d3.select(this).datum().optype; // Access 'optype' from the clicked bar's bound data
+                // const filteredData = data.filter(d => d.optype === optype);
+                // // console.log(filteredData);
+                // opnameChart(filteredData);
+            });
+    
+
+    }
+    // if bar clicked, expand third barplot for age range that is properly filtered by the bar selection
+    function agerange(data){
+        const thirdChart = d3.select("#expandable2")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`)
+        .style('overflow', 'visible');
+
+        const ageBins = d3.group(data, d => {
+            const binStart = Math.floor(d.age / 5) * 5;
+            const binEnd = binStart + 4;
+            return `${binStart}-${binEnd}`;
+        });
+    
+        const ageBinKeys = Array.from(ageBins.keys()).sort((a, b) => d3.ascending(Number(a.split('-')[0]), Number(b.split('-')[0])));
+
+        //TODO
+
+    }
+    // if bar clicked, expand fourth barplot for sex that is properly filtered by the bar selection
+    function sexchart(data){
+        const thirdChart = d3.select("#expandable3")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`)
+        .style('overflow', 'visible');
+
+
+        const sex = Array.from(new Set(data.map(d=> d.sex)));
+
+        //TODO
+
+    }
+
+
+    
 
 }
