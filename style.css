@@ -700,3 +700,51 @@ svg.rotate {
   font-size: 20px; /* Set font size to 14px */
   font-weight: 400; /* Set font weight to 600 */
 }
+
+#mortalitysub {
+  padding: 8px;
+  margin: 0;
+  background-color: #f3f0f0b4; /* Light grey background */
+  border-radius: 15px; /* Rounded corners */
+  display: inline-block; /* Ensures background only covers text */
+  font-size: 90%;
+  width: auto; /* Allows width to match text content */
+  white-space: nowrap; /* Prevents breaking into multiple lines */
+}
+
+#primary {
+  text-align: center;
+}
+
+#mortalitysub1 {
+  padding: 8px;
+  margin: 0 auto; /* Centering trick for inline-block */
+  background-color: #f3f0f0b4;
+  border-radius: 15px;
+  display: inline-block;
+  font-size: 90%;
+  text-align: center;
+  max-width: 60%;
+  white-space: nowrap;
+}
+
+
+#subtitle1{
+  font-weight:lighter;
+  opacity: .7;
+  /* font-style: italic; */
+  padding:0;
+  margin-bottom: 20px;
+}
+
+.density-y .tick line{
+  visibility:hidden;
+}
+
+.density-x .domain{
+  visibility: hidden;
+}
+
+.density-y .domain{
+  visibility: hidden;
+}

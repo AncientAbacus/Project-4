@@ -789,8 +789,10 @@ function createDensity(data, feature, chartid) {
         .range([height, 0])
         .padding(0.1);
 
+    //axes
     primaryChart.append("g")
         .attr("transform", `translate(0, ${height})`)
+        .attr("class","density-x")
         .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0%")))
         .selectAll("text")
         .style("font-family", "Sora")
@@ -798,6 +800,7 @@ function createDensity(data, feature, chartid) {
 
     primaryChart.append("g")
         .call(d3.axisLeft(y))
+        .attr("class","density-y")
         .selectAll("text")
         .style("font-family", "Sora")
         .style("font-size", "7px")
@@ -858,7 +861,8 @@ function createDensity(data, feature, chartid) {
             // Cascading logic
             if (feature === 'optype') {
                 d3.select('#expandable').html('');
-                insertText('#expandable', `What specific operation are you undergoing?`);
+                insertText('#expandable', `What is the name of your operation?`);
+                // insertText2('#primarysub', `You selected: ${key}`);
                 createDensity(filteredData, 'opname', 'expandable');
             } else if (feature === 'opname') {
                 d3.select('#expandable2').html('');
@@ -907,5 +911,17 @@ function insertText(container, text) {
 
     d3.select(container)
         .append("h5")
+        .attr('id','mortalitysub')
+        .text(text);
+}
+
+function insertText2(container, text) {
+    d3.select(container)
+        .selectAll("p")
+        .remove(); 
+
+    d3.select(container)
+        .append("p")
+        .attr("class","mortalitysub")
         .text(text);
 }
