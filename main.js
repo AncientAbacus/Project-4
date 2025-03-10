@@ -145,7 +145,7 @@ function createRidgeline() {
     // Filter data to ensure there is valid optype and age
     data = data.filter(d => d.optype && d.age != null); 
     const width = 750;
-    const height = 500;
+    const height = 400;
     const margin = { top: 20, right: 30, bottom: 40, left: 110 };
 
     // Create a map to store the count of cases for each age
