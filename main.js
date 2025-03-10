@@ -711,8 +711,8 @@ function testMortality() {
 // Function to create the density chart based on the feature and chart container
 function createDensity(data, feature, chartid) {
     const margin = { top: 0, right: 30, bottom: 20, left: 50 };
-    const width = 500 - margin.left - margin.right;
-    const height = 300 - margin.top - margin.bottom;
+    const width = 600 - margin.left - margin.right;
+    const height = 350 - margin.top - margin.bottom;
 
     const primaryChart = d3.select(`#${chartid}`)
         .append("svg")
@@ -769,8 +769,10 @@ function createDensity(data, feature, chartid) {
         .range([height, 0])
         .padding(0.1);
 
+    //axes
     primaryChart.append("g")
         .attr("transform", `translate(0, ${height})`)
+        .attr("class","density-x")
         .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0%")))
         .selectAll("text")
         .style("font-family", "Sora")
@@ -778,6 +780,7 @@ function createDensity(data, feature, chartid) {
 
     primaryChart.append("g")
         .call(d3.axisLeft(y))
+        .attr("class","density-y")
         .selectAll("text")
         .style("font-family", "Sora")
         .style("font-size", "7px");
@@ -816,7 +819,7 @@ function createDensity(data, feature, chartid) {
             // Cascading logic
             if (feature === 'optype') {
                 d3.select('#expandable').html('');
-                insertText('#expandable', `What specific operation are you undergoing?`);
+                insertText('#expandable', `What is the name of your operation?`);
                 // insertText2('#primarysub', `You selected: ${key}`);
                 createDensity(filteredData, 'opname', 'expandable');
             } else if (feature === 'opname') {
