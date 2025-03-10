@@ -96,51 +96,6 @@ document.addEventListener("DOMContentLoaded", function() {
   
   
 
-// display stats -----------DYSFUNCTIONAL-------------------------------------------------------------------------
-function displayStats() {  
-    // Create the dl element
-    const dl = d3.select('#stats').append('dl').attr('class', 'stats');
-
-    // add total observations
-    dl.append('dt').html('Total');
-    dl.append('dd').text(data.length);
-
-    // Add total cases by age bin
-    const ageBins = d3.group(data, d => d.agebin);
-    const sortedAgeBins = Array.from(ageBins).sort((a, b) => {
-        const aStart = a[0] === "70+" ? 70 : Number(a[0].split('-')[0]);
-        const bStart = b[0] === "70+" ? 70 : Number(b[0].split('-')[0]);
-        return d3.ascending(aStart, bStart);
-    });
-    sortedAgeBins.forEach(([key, value]) => {
-        dl.append('dt').text(`${key}`);
-        dl.append('dd').text(value.length);
-    });
-}
-
-
-// update stats for nested stacked bar chart -------------------------------------------------------
-function updateStats(filteredData) {  
-    // Create the dl element
-    const dl = d3.select('#stats').append('dl').attr('class', 'stats');
-
-    // add total observations
-    dl.append('dt').html('Total');
-    dl.append('dd').text(filteredData.length);
-
-    // Add total cases by age bin
-    const ageBins = d3.group(filteredData, d => d.agebin);
-    const sortedAgeBins = Array.from(ageBins).sort((a, b) => {
-        const aStart = a[0] === "70+" ? 70 : Number(a[0].split('-')[0]);
-        const bStart = b[0] === "70+" ? 70 : Number(b[0].split('-')[0]);
-        return d3.ascending(aStart, bStart);
-    });
-    sortedAgeBins.forEach(([key, value]) => {
-        dl.append('dt').text(`${key}`);
-        dl.append('dd').text(value.length);
-    });
-}
-
 // create ridgeline ---------------------------------------------------------------------
 function createRidgeline() {
     // Filter data to ensure there is valid optype and age
@@ -714,7 +669,7 @@ function updateTopPlot(data, position, durationType) {
 }
 
 
-// mortality???? ------------------------------------------------------------------------------------------
+// case duration???? ------------------------------------------------------------------------------------------
 // Function to initialize the first density chart (for optype feature)
 function testMortality() {
     createDensity(data, 'optype', 'selectable');
@@ -723,13 +678,12 @@ function testMortality() {
 // Function to create the density chart based on the feature and chart container
 function createDensity(data, feature, chartid) {
     const margin = { top: 40, right: 30, bottom: 40, left: 50 };
-    const width = 300 - margin.left - margin.right;
+    const width = 500 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
-    // Initialize primary chart inside the specified chartid container
     const primaryChart = d3.select(`#${chartid}`)
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
+        .attr("width", width )
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left + margin.right}, ${margin.top})`)
@@ -737,7 +691,6 @@ function createDensity(data, feature, chartid) {
 
     let featureCounts = [];
 
-    // Dynamically create age bins if the feature is age
     if (feature === 'age') {
         const ageBins = d3.group(data, d => {
             const binStart = Math.floor(d.age / 5) * 5;
@@ -745,117 +698,113 @@ function createDensity(data, feature, chartid) {
             return `${binStart}-${binEnd}`;
         });
 
-        // Ensure ageBins is an iterable map
         if (ageBins && ageBins.size > 0) {
             const ageBinKeys = Array.from(ageBins.keys()).sort((a, b) => d3.ascending(Number(a.split('-')[0]), Number(b.split('-')[0])));
-            featureCounts = ageBinKeys.map(bin => {
-                return { 
-                    key: bin,
-                    count: ageBins.get(bin).length  // Number of cases in the age bin
-                };
-            });
+            featureCounts = ageBinKeys.map(bin => ({ key: bin, count: ageBins.get(bin).length }));
         } else {
             console.error("No age bins found or ageBins is not iterable.");
-            return;  // Exit early if there's an issue with the ageBins
+            return;
         }
     } else {
-        // Group data by the specified feature and count frequencies
         featureCounts = d3.rollup(
             data,
-            v => v.length, // Count the number of cases for each unique value of the feature
-            d => d[feature] // Group by the dynamic feature
+            v => v.length,
+            d => d[feature]
         );
 
-        // Ensure featureCounts is iterable
         if (featureCounts instanceof Map) {
             featureCounts = Array.from(featureCounts, ([key, count]) => ({ key, count }))
                 .sort((a, b) => d3.descending(a.count, b.count));
         } else {
             console.error("featureCounts is not a valid Map.");
-            return;  // Exit early if featureCounts is not iterable
+            return;
         }
     }
 
-    // Normalize the counts to density (relative frequency)
-    const totalCount = d3.sum(featureCounts, d => d.count);  // Get total count
+    const totalCount = d3.sum(featureCounts, d => d.count);
     const densityData = featureCounts.map(d => ({
         key: d.key,
-        density: d.count / totalCount // Normalize to density (0 to 1)
+        density: d.count / totalCount
     }));
 
-    // Set up scales
     const x = d3.scaleLinear()
-        .domain([0, d3.max(densityData, d => d.density)]) // Domain for normalized density (0 to 1)
-        .range([0, width]); // Map to the width of the chart
+        .domain([0, d3.max(densityData, d => d.density)])
+        .range([0, width]);
 
     const y = d3.scaleBand()
-        .domain(densityData.map(d => d.key)) // Domain based on the selected feature values
-        .range([height, 0]) // Map to the height of the chart
-        .padding(0.1); // Add some padding between bars
+        .domain(densityData.map(d => d.key))
+        .range([height, 0])
+        .padding(0.1);
 
-    // Add x-axis (representing density, showing percentage format)
     primaryChart.append("g")
         .attr("transform", `translate(0, ${height})`)
-        .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0%"))) // Format as percentage
+        .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0%")))
         .selectAll("text")
         .style("font-family", "Sora")
         .style("font-size", "7px");
 
-    // Add y-axis (for feature values)
     primaryChart.append("g")
         .call(d3.axisLeft(y))
         .selectAll("text")
         .style("font-family", "Sora")
         .style("font-size", "7px");
 
-    // Add bars representing density
     primaryChart.selectAll(".bar")
         .data(densityData)
         .join("rect")
         .attr("class", "bar")
-        .attr("x", 0) // Start bars at x = 0
-        .attr("y", d => y(d.key)) // Position bars based on the selected feature value
-        .attr("width", d => x(d.density)) // Width of bars based on normalized density
-        .attr("height", y.bandwidth()) // Height of bars based on band scale
-        .attr("fill", "black") // Bar color
-        .attr("stroke", "black") // Bar border color
-        .attr("stroke-width", 1)
+        .attr("x", 0)
+        .attr("y", d => y(d.key))
+        .attr("width", d => x(d.density))
+        .attr("height", y.bandwidth())
+        .attr("fill", "black")
         .on('click', function(event) {
-            // Reset bar colors to default
-            d3.selectAll('.bar').style('fill', "black");
-            d3.select(this).style('fill', 'crimson');
+            const chartContainer = d3.select(this.parentNode); // Restrict selection to the clicked chart
         
-            const key = d3.select(this).datum().key; // Access the dynamic feature value
+            chartContainer.selectAll('.bar').style('fill', "black"); // Reset only bars in this chart
+            d3.select(this).style('fill', 'crimson'); // Highlight clicked bar
+        
+            const key = d3.select(this).datum().key;
             const filteredData = data.filter(d => {
                 if (feature === 'age') {
                     const binStart = Math.floor(d.age / 5) * 5;
                     const binEnd = binStart + 4;
-                    return `${binStart}-${binEnd}` === key; // Filter data based on the age bin key
+                    return `${binStart}-${binEnd}` === key;
                 }
-                return d[feature] === key; // For other features, filter directly
+                return d[feature] === key;
             });
         
-            // Calculate the average case_duration
             const avgDuration = filteredData.length > 0 
                 ? d3.mean(filteredData, d => d.case_duration) 
                 : 0;
         
-            // Update the h5 element with id="survivability"
-            d3.select("#survivability").text(`${avgDuration.toFixed(2)} Hours`);
+            insertText('#prognosis', `Your case will probably take: ${avgDuration.toFixed(2)} Hours`);
         
-            // Clear the expandable container
-        
-            // Cascading logic based on the feature
+            // Cascading logic
             if (feature === 'optype') {
                 d3.select('#expandable').html('');
+                insertText('#expandable', `What specific operation are you undergoing?`);
                 createDensity(filteredData, 'opname', 'expandable');
             } else if (feature === 'opname') {
                 d3.select('#expandable2').html('');
+                insertText('#expandable2', `How old are you?`);
                 createDensity(filteredData, 'age', 'expandable2');
-            } else if (feature === 'age'){
+            } else if (feature === 'age') {
                 d3.select('#expandable3').html('');
+                insertText('#expandable3', `What is your gender?`);
                 createDensity(filteredData, 'sex', 'expandable3');
             }
         });
         
+}
+
+// Utility function to dynamically insert an h5 element
+function insertText(container, text) {
+    d3.select(container)
+        .selectAll("h5")
+        .remove(); // Remove existing h5 if any
+
+    d3.select(container)
+        .append("h5")
+        .text(text);
 }
