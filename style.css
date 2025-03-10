@@ -664,11 +664,16 @@ svg.rotate {
 }
 
 /* test your mortality css ---------------------------------------------------------------------*/
-#testyourmortality {
-  margin-top:30px;
+#testyourmortality1 {
+  display: grid;
+  align-items: center; /* Center the content vertically */
+}
+
+#testyourmortality2 {
   display: grid;
   grid-template-columns: 1fr 1fr; /* Create two equal-width columns */
   column-gap: 10px; /* Space between grid items */
+  column-gap: 50px; /* Space between grid items */
   align-items: center; /* Center the content vertically */
 }
 
@@ -677,7 +682,13 @@ svg.rotate {
   text-align: center; /* Optionally center text */
 }
 
-#primary, #secondary, #age, #sex {
+#primary, #secondary{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#age, #sex {
   display: flex;
   flex-direction: column;
   gap: 10px; /* Add space between nested elements inside each section */
@@ -759,3 +770,4 @@ h5#mort{
   font-weight:lighter;
   margin-bottom:4px;
 }
+

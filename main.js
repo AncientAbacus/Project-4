@@ -723,20 +723,30 @@ function testMortality() {
 
 // Function to create the density chart based on the feature and chart container
 function createDensity(data, feature, chartid) {
-    const maxWidth = 500;  // Set maximum width
-    const maxHeight = 300; // Set maximum height
-    const margin = { top: 20, right: 50, bottom: 40, left: 80 }; // Adjust for axis labels
-    const width = Math.min(maxWidth, 600) - margin.left - margin.right;
-    const height = Math.min(maxHeight, 350) - margin.top - margin.bottom;
+    let margin, width, height;
+ 
+    if (feature === 'optype') {
+        margin = { top: 40, right: 30, bottom: 40, left: 70 };
+        width = 900 - margin.left - margin.right;
+        height = 500 - margin.top - margin.bottom;
+    } else if (feature === 'opname') {
+        margin = { top: 40, right: 30, bottom: 40, left: 180 };
+        width = 800 - margin.left - margin.right;
+        height = 600 - margin.top - margin.bottom;
+    } else {
+        margin = { top: 40, right: 30, bottom: 40, left: 40 };
+        width = 500 - margin.left - margin.right;
+        height = 400 - margin.top - margin.bottom;
+    }
     
 
     const primaryChart = d3.select(`#${chartid}`)
     .append("svg")
-    .attr("width", width + margin.left + margin.right)  // Ensure full space
+    .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom) // Ensure full space
     .append("g")
-    .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
+    .attr("transform", `translate(${margin.left}, ${margin.top})`)
+    .style('overflow', 'visible');
 
     let featureCounts = [];
 
@@ -770,6 +780,14 @@ function createDensity(data, feature, chartid) {
         }
     }
 
+    if (feature === 'optype') {
+        document.getElementById('expandable').scrollIntoView({ behavior: 'smooth' });
+    } else if (feature === 'opname') {
+        document.getElementById('expandable2').scrollIntoView({ behavior: 'smooth' });
+    } else if (feature === 'age') {
+        document.getElementById('expandable3').scrollIntoView({ behavior: 'smooth' });
+    }
+
     const totalCount = d3.sum(featureCounts, d => d.count);
     const densityData = featureCounts.map(d => ({
         key: d.key,
@@ -781,7 +799,7 @@ function createDensity(data, feature, chartid) {
 
     // Set a base font size and scale it down as more labels are added
     const baseFontSize = 8;
-    const minFontSize = 4;
+    const minFontSize = 7;
     const yFontSize = Math.max(minFontSize, baseFontSize - 0.2 * (numYLabels - 10)); // Adjust scaling
 
     const x = d3.scaleLinear()
@@ -825,6 +843,17 @@ function createDensity(data, feature, chartid) {
             d3.select(this).style('fill', 'crimson'); // Highlight clicked bar
         
             const key = d3.select(this).datum().key;
+            // Remove previous charts if they exist
+            if (feature === 'optype') {
+                d3.select('#expandable').html('');
+                d3.select('#expandable2').html('');
+                d3.select('#expandable3').html('');
+            } else if (feature === 'opname') {
+                d3.select('#expandable2').html('');
+                d3.select('#expandable3').html('');
+            } else if (feature === 'age') {
+                d3.select('#expandable3').html('');
+            }
             const filteredData = data.filter(d => {
                 if (feature === 'age') {
                     const binStart = Math.floor(d.age / 5) * 5;
@@ -833,6 +862,13 @@ function createDensity(data, feature, chartid) {
                 }
                 return d[feature] === key;
             });
+
+            function insertProgText(selector, textBefore, variableText, textAfter) {
+                const element = document.querySelector(selector);
+                if (!element) return;
+            
+                element.innerHTML = `${textBefore} <span style="color: crimson;">${variableText}</span>${textAfter}`;
+            }
         
             const avgDuration = filteredData.length > 0 
                 ? d3.mean(filteredData, d => d.case_duration) 
@@ -843,14 +879,14 @@ function createDensity(data, feature, chartid) {
             let difference = (averageDuration -avgDuration).toFixed(2);
             if(difference < 0){
                 difference = Math.abs(difference);
-                insertText('#survivability', `${avgDuration.toFixed(2)} hours, which is ${difference} hours longer than the average.`);
+                insertProgText('#survivability', '',`${avgDuration.toFixed(2)} hours`,`, which is ${difference} hours longer than the average.`);
             }
             else if(difference > 0){
                 difference = Math.abs(difference);
-                insertText('#survivability', `${avgDuration.toFixed(2)} hours, which is ${difference} hours shorter than the average.`);
+                insertProgText('#survivability', '',`${avgDuration.toFixed(2)} hours`,`, which is ${difference} hours shorter than the average.`);
             }
             else if(difference ===0){
-                insertText('#survivability', `${avgDuration.toFixed(2)} hours, which is the same as the average duration!`);
+                insertProgText('#survivability', '',`${avgDuration.toFixed(2)} hours`,`, which is the same as the average!`);
 
             }
         
@@ -897,3 +933,28 @@ function insertText(container, text) {
         .text(text);
 }
 
+function wrap(text, width) {
+    text.each(function() {
+        const text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            lineHeight = 1.1, // ems
+            y = text.attr("y"),
+            dy = parseFloat(text.attr("dy")),
+            x = text.attr("x");
+        let word,
+            line = [],
+            lineNumber = 0,
+            tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+            }
+        }
+    });
+}
