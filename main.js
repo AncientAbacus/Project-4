@@ -112,9 +112,16 @@ function updateStats(filteredData) {
 function createRidgeline() {
     // Filter data to ensure there is valid optype and age
     data = data.filter(d => d.optype && d.age != null); 
-    const width = 1000;
+    const width = 750;
     const height = 500;
     const margin = { top: 20, right: 30, bottom: 40, left: 110 };
+
+    // Create a map to store the count of cases for each age
+    const ageCounts = d3.rollup(
+        data,
+        v => v.length, // Count the number of cases for each age
+        d => d.age // Group by age
+    );
 
     const svg = d3
         .select('#stream')
@@ -173,11 +180,43 @@ function createRidgeline() {
             console.warn(`No data for optype: ${key}`);
         }
     });
+    
+
+     // define mouseover event
+     const mouseover = function(event,d) {
+        tooltip.style("opacity", 1)
+        d3.selectAll(".myArea").style("opacity", .2)
+        d3.select(this)
+          .style("stroke", "black")
+          .style("opacity", 1)
+      }
+
+      const mousemove = function (event, d) {
+        // Get the mouse position relative to the x-scale
+        const [x] = d3.pointer(event, this);
+        const hoveredAge = Math.round(xScale.invert(x)); // Get the age at the hovered position
+    
+        // Get the count of cases for the hovered age
+        const count = ageCounts.get(hoveredAge) || 0;
+    
+        // Update the tooltip text
+        tooltip
+            .html(`Age: ${hoveredAge}<br>Cases: ${count}`)
+            .style('left', (event.pageX + 10) + 'px')
+            .style('top', (event.pageY - 28) + 'px');
+    };
+    const mouseleave = function(event,d) {
+        tooltip.style("opacity", 0)
+        d3.selectAll(".myArea").style("opacity", .7)
+        d3.select(this).style("opacity",.7);
+       }
 
     // Define yScale for density values AFTER allDensity is populated
     const yScale = d3.scaleLinear()
         .domain([0, d3.max(allDensity, d => d3.max(d.density, v => v[1]))])
         .range([yCategoryScale.bandwidth(), 0]);  // Invert the range for proper alignment
+
+    
 
     // Add areas (the ridgelines)
     svg.selectAll('.area')
@@ -198,7 +237,11 @@ function createRidgeline() {
                 .y(function (d) { return 1.7*yScale(d[1]) - 20; });  // Y position based on density
 
             return line(d.density);
-        });
+        })
+        .attr("class", "myArea")
+        .on("mouseover", mouseover)
+        .on("mousemove",mousemove)
+        .on("mouseleave", mouseleave);
 
     // Add x-axis
     svg.append('g')
@@ -220,8 +263,8 @@ function createRidgeline() {
 
     // Add x-axis label
     svg.append('text')
-        .attr('x', width / 2)
-        .attr('y', height + margin.bottom - 10)
+        .attr('x', width / 2 - 20)
+        .attr('y', height + margin.bottom-5)
         .attr('text-anchor', 'middle')
         .attr('font-size', '17px')
         .attr('fill', 'black')
@@ -238,6 +281,8 @@ function createRidgeline() {
         .attr('fill', 'black')
         .style('font-weight', 'lighter')
         .text('Operation Type');
+
+
 
     // Change the font of the axis ticks to Roboto
     svg.selectAll('.tick text')
@@ -382,7 +427,7 @@ function createStreamGraph() {
     // Add x-axis label
     svg.append('text')
         .attr('x', width / 2)  // Center horizontally
-        .attr('y', margin.bottom + 465)  // Position below x-axis
+        .attr('y', margin.bottom + 485)  // Position below x-axis
         .attr('text-anchor', 'middle')
         .attr('font-size', '17px')
         .attr('fill', 'black')  // Set text color to grey
