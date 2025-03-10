@@ -59,9 +59,41 @@ async function loadData() {
 
 // execute loadData when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadData();
+    await loadData();      
 });
 
+// Wait for the DOM to fully load
+document.addEventListener("DOMContentLoaded", function() {
+    // Get the scrollArrow and opening2 elements
+    const scrollArrow = document.getElementById("scrollArrow");
+    const opening2 = document.getElementById("opening2");
+  
+    // Add event listener to scrollArrow for the click event
+    scrollArrow.addEventListener("click", function() {
+      // Scroll to the opening2 element smoothly
+      opening2.scrollIntoView({
+        behavior: "smooth",  // Smooth scrolling
+        block: "start"       // Align to the top of the viewport
+      });
+    });
+  });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    // Get the scrollArrow and opening2 elements
+    const scrollArrow2 = document.getElementById("scrollArrow2");
+    const start = document.getElementById("start");
+  
+    // Add event listener to scrollArrow for the click event
+    scrollArrow2.addEventListener("click", function() {
+      // Scroll to the opening2 element smoothly
+      start.scrollIntoView({
+        behavior: "smooth",  // Smooth scrolling
+        block: "start"       // Align to the top of the viewport
+      });
+    });
+  });
+  
+  
 
 // display stats -----------DYSFUNCTIONAL-------------------------------------------------------------------------
 function displayStats() {  
@@ -683,5 +715,5 @@ function updateTopPlot(data, position, durationType) {
 
 // mortality???? ------------------------------------------------------------------------------------------
 function testMortality(){
-    
+
 }
