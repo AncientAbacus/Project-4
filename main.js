@@ -679,3 +679,9 @@ function updateTopPlot(data, position, durationType) {
         .style("font-weight", "bold")
         .text(`${durationLabel} Duration Distribution for ${position} Position`);
 }
+
+
+// mortality???? ------------------------------------------------------------------------------------------
+function testMortality(){
+    
+}
