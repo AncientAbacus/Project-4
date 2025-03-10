@@ -715,8 +715,9 @@ function createSurgicalViz() {
 
 // case duration???? ------------------------------------------------------------------------------------------
 // Function to initialize the first density chart (for optype feature)
+let averageDuration=0;
 function testMortality() {
-    const averageDuration = d3.mean(data, d => d.case_duration);
+    averageDuration = d3.mean(data, d => d.case_duration);
     createDensity(data, 'optype', 'selectable');
 }
 
@@ -837,7 +838,21 @@ function createDensity(data, feature, chartid) {
                 ? d3.mean(filteredData, d => d.case_duration) 
                 : 0;
         
-            insertText('#survivability', `${avgDuration.toFixed(2)} Hours`);
+
+            // conditional text
+            let difference = (averageDuration -avgDuration).toFixed(2);
+            if(difference < 0){
+                difference = Math.abs(difference);
+                insertText('#survivability', `${avgDuration.toFixed(2)} Hours, which is ${difference} hours longer than the average.`);
+            }
+            else if(difference > 0){
+                difference = Math.abs(difference);
+                insertText('#survivability', `${avgDuration.toFixed(2)} Hours, which is ${difference} hours shorter than the average.`);
+            }
+            else if(difference ===0){
+                insertText('#survivability', `${avgDuration.toFixed(2)} Hours, which is the same as the average duration!`);
+
+            }
         
             // Cascading logic
             if (feature === 'optype') {
@@ -866,9 +881,7 @@ function createDensity(data, feature, chartid) {
         .style("font-family", "Sora")
         .style("font-size", `${yFontSize}px`)
         .style("fill", "black")
-        .text(d => d3.format(".0%")(d.density)); // Format as percentage
-    
-        
+        .text(d => d3.format(".0%")(d.density)); // Format as percentage        
 }
 
 // utlity function
