@@ -843,14 +843,14 @@ function createDensity(data, feature, chartid) {
             let difference = (averageDuration -avgDuration).toFixed(2);
             if(difference < 0){
                 difference = Math.abs(difference);
-                insertText('#survivability', `${avgDuration.toFixed(2)} Hours, which is ${difference} hours longer than the average.`);
+                insertText('#survivability', `${avgDuration.toFixed(2)} hours, which is ${difference} hours longer than the average.`);
             }
             else if(difference > 0){
                 difference = Math.abs(difference);
-                insertText('#survivability', `${avgDuration.toFixed(2)} Hours, which is ${difference} hours shorter than the average.`);
+                insertText('#survivability', `${avgDuration.toFixed(2)} hours, which is ${difference} hours shorter than the average.`);
             }
             else if(difference ===0){
-                insertText('#survivability', `${avgDuration.toFixed(2)} Hours, which is the same as the average duration!`);
+                insertText('#survivability', `${avgDuration.toFixed(2)} hours, which is the same as the average duration!`);
 
             }
         
