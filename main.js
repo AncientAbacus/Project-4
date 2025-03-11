@@ -789,9 +789,8 @@ function createDensity(data, feature, chartid) {
         }
     }
     
-    if (feature === 'optype') {
-        document.getElementById('secondary').scrollIntoView({ behavior: 'smooth' });
-    } else if (feature === 'opname') {
+
+    if (feature === 'opname') {
         document.getElementById('mort').scrollIntoView({ behavior: 'smooth' });
     } else if (feature === 'age') {
         document.getElementById('age').scrollIntoView({ behavior: 'smooth' });
