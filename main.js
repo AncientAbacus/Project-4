@@ -846,6 +846,8 @@ function createDensity(data, feature, chartid) {
         .attr("y", d => y(d.key))
         .attr("width", d => x(d.density))
         .attr("height", y.bandwidth())
+        .attr("rx", 5)  // Set the radius for rounded corners (adjust the value as needed)
+        .attr("ry", 5) 
         .attr("fill", "black")
         .on('click', function(event) {
             const chartContainer = d3.select(this.parentNode); // Restrict selection to the clicked chart
