@@ -23,6 +23,7 @@ window.addEventListener('scroll', () => {
     const scrollPosition = window.pageYOffset; // The current scroll position
 
     // Update the --scroll property based on the current scroll position and full document height
+    //pushed
     document.body.style.setProperty('--scroll', scrollPosition / (documentHeight - viewportHeight));
 }, false);
 
