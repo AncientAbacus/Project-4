@@ -37,7 +37,7 @@
     <div class="header">
       <h2 ><span id="teamname">Team ChatGTE presents:</span> <span id="title">The Organ Trail 🩸</span></h2>
     </div>
-    <h5 id="subtitle">An exploration of how surgery affects our bodies and what we can expect from different operations.</h5>
+    <h5 id="subtitle">An exploration of how we experience surgery and what we can expect from different operations.</h5>
     <label id="names">
       By <span class="name">Gino Angelici</span>, <span class="name">Tony Wang</span>, and <span class="name">Eddie Lu</span>
     </label>
@@ -87,20 +87,16 @@
     <div class = "opening4" id="opening4">
       <div class="surgical-position-viz">
         <h4>How do surgical positions change how we experience surgery?</h4>
-        <p class="viz-description">
-          This visualization combines operation duration analysis with surgical position illustrations. 
-          The top plot shows the distribution of three types of durations for the selected position, 
-          helping understanding of typical procedure lengths. The bottom diagram illustrates 
-          the corresponding patient positioning technique. <span id='emphasis'>Select different positions from the 
-          dropdown menu to explore various surgical approaches and their associated timing patterns.</span>
-        </p>
         <div class = "surgical-position-align">
           <div class="position-dropdown"></div>
           <div class="position-plots"> </div>
           <div id="bottomPositionPlot"></div>
           <div id="topPositionPlot"></div>
         </div>        
-          <p class="viz-description">
+        <p>
+          Here, we can see that operation, case, and anaesthesia duration vary wildly depending on the positions in which we're operated on. For instance, prone surgeries are consistently the shortest in all three metrics, while kidney-position surgeries are consistently middle of the pack. <span id="emphasis">Try exploring some others!</span>
+        </p>
+          <p class="source">
             Image source: <a href="https://nurseslabs.com/patient-positioning/">NursesLabs</a>
         </p>
       </div>
@@ -115,8 +111,8 @@
 
       <!--mayve we add a graph that lets you vary some variables (like type of surgery, age, sex, and showcase mortality)-->
       <div class="opening5" id="opening5">
-        <h4 id="mortalitytitle">It's about the journey, not the destination!</h4>
-          <h5 id="subtitle1">See how case duration (how long you'll be on the operating table) is impacted by select factors.</h5>
+        <h4 id="mortalitytitle">Operation Duration Estimator</h4>
+          <h5 id="subtitle1"><strong>It's about the journey, not the destination!</strong> See how operation duration (how long you'll be on the operating table) is impacted by select factors.</h5>
 
   
         <div id="testyourmortality1">

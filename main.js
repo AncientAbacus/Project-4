@@ -486,7 +486,7 @@ function updateTopPlot(data, position) {
 
     // X Scale (Duration)
     const xScale = d3.scaleLinear()
-        .domain([0, d3.max(filteredData, d => Math.max(+d.op_duration, +d.case_duration, +d.ane_duration))])
+        .domain([0, 500])
         .range([0, width]);
 
     // Y Scale (Categories)
@@ -652,7 +652,7 @@ let keys=[];
 let key1, key2, key3, key4='';
 
 function testMortality() {
-    averageDuration = d3.mean(data, d => d.case_duration);
+    averageDuration = d3.mean(data, d => d.op_duration);
     createDensity(data, 'optype', 'selectable');
 }
 
@@ -832,7 +832,7 @@ function createDensity(data, feature, chartid) {
             }
         
             avgDuration = filteredData.length > 0 
-                ? d3.mean(filteredData, d => d.case_duration) 
+                ? d3.mean(filteredData, d => d.op_duration) 
                 : 0;
         
 
