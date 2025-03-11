@@ -207,34 +207,57 @@ function createRidgeline() {
     });
     
 
-     // define mouseover event
-     const mouseover = function(event,d) {
-        tooltip.style("opacity", 1)
-        d3.selectAll(".myArea").style("opacity", .2)
-        d3.select(this)
-          .style("stroke", "black")
-          .style("opacity", 1)
-      }
+    // Add tooltip with enhanced styling
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+        .style("position", "absolute")
+        .style("background", "linear-gradient(to bottom, #ffffff, #f5f5f5)")
+        .style("border", "1px solid rgba(0,0,0,0.1)")
+        .style("border-radius", "6px")
+        .style("padding", "12px")
+        .style("box-shadow", "2px 2px 6px rgba(0, 0, 0, 0.1)")
+        .style("font-family", "Sora")
+        .style("font-size", "12px")
+        .style("line-height", "1.4")
+        .style("transition", "opacity 0.2s")
+        .style("pointer-events", "none")
+        .style("z-index", "1000");
 
-      const mousemove = function (event, d) {
-        // Get the mouse position relative to the x-scale
-        const [x] = d3.pointer(event, this);
-        const hoveredAge = Math.round(xScale.invert(x)); // Get the age at the hovered position
-    
-        // Get the count of cases for the hovered age
-        const count = ageCounts.get(hoveredAge) || 0;
-    
-        // Update the tooltip text
-        tooltip
-            .html(`Age: ${hoveredAge}<br>Cases: ${count}`)
-            .style('left', (event.pageX + 10) + 'px')
-            .style('top', (event.pageY - 28) + 'px');
+    // Update mouseover events
+    const mouseover = function(event, d) {
+        tooltip.style("opacity", 1);
+        d3.selectAll(".myArea").style("opacity", .2);
+        d3.select(this)
+            .style("stroke", "black")
+            .style("opacity", 1);
     };
-    const mouseleave = function(event,d) {
-        tooltip.style("opacity", 0)
-        d3.selectAll(".myArea").style("opacity", .7)
-        d3.select(this).style("opacity",.7);
-       }
+
+    const mousemove = function(event, d) {
+        const [x] = d3.pointer(event, this);
+        const hoveredAge = Math.round(xScale.invert(x));
+        const count = ageCounts.get(hoveredAge) || 0;
+
+        tooltip.html(`
+            <div style="font-weight: bold; color: ${colorScale(d.key)}; margin-bottom: 5px">
+                ${d.key}
+            </div>
+            <div style="color: #666">
+                Age: <span style="color: #333; font-weight: 600">${hoveredAge}</span>
+            </div>
+            <div style="color: #666">
+                Cases: <span style="color: #333; font-weight: 600">${count}</span>
+            </div>
+        `)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px");
+    };
+
+    const mouseleave = function(event, d) {
+        tooltip.style("opacity", 0);
+        d3.selectAll(".myArea").style("opacity", .7);
+        d3.select(this).style("opacity", .7);
+    };
 
     // Define yScale for density values AFTER allDensity is populated
     const yScale = d3.scaleLinear()
@@ -338,14 +361,15 @@ function createSurgicalPositionViz() {
 
     // Initial image
     bottomSvg.append("image")
-        .attr("xlink:href", `surgical positions/supine.png`)
+        .attr("xlink:href", `surgical positions/prone.png`)
         .attr("width", imageWidth)
         .attr("height", imageHeight)
         .attr("preserveAspectRatio", "xMidYMid meet");
 
     // Load CSV and create dropdown
-    d3.csv("data/cases_new.csv").then(function(data) {
-        const positions = [...new Set(data.map(d => d.position))];
+    d3.csv("data/cases_position.csv").then(function(data) {
+        const positions = [...new Set(data.map(d => d.position))]
+        .filter(pos => pos.toLowerCase() !== "sitting");  // Remove sitting position
         
         const dropdown = d3.select(".position-dropdown")
             .append("select")
@@ -364,7 +388,7 @@ function createSurgicalPositionViz() {
             .text(d => d)
             .attr("value", d => d);
         
-        updateTopPlot(data, 'Supine', 'op_duration');
+        updateTopPlot(data, 'Prone', 'op_duration');
 
         // Update function for position image
         function updatePositionImage(position) {
@@ -400,31 +424,31 @@ function createSurgicalViz() {
         {id: 'ane_duration', label: 'Anesthesia Duration'}
     ];
 
-    // Create button container
-    const buttonContainer = d3.select(".position-dropdown")
-        .append("div")
-        .attr("class", "duration-buttons");
+    // // Create button container
+    // const buttonContainer = d3.select(".position-dropdown")
+    //     .append("div")
+    //     .attr("class", "duration-buttons");
 
-    // Add duration buttons
-    buttonContainer.selectAll("button")
-        .data(durationTypes)
-        .enter()
-        .append("button")
-        .attr("class", d => `duration-btn ${d.id}`)
-        .classed("active", d => d.id === "op_duration")
-        .text(d => d.label)
-        .on("click", function(event, d) {
-            // Update active state
-            buttonContainer.selectAll(".duration-btn")
-                .classed("active", false);
-            d3.select(this).classed("active", true);
+    // // Add duration buttons
+    // buttonContainer.selectAll("button")
+    //     .data(durationTypes)
+    //     .enter()
+    //     .append("button")
+    //     .attr("class", d => `duration-btn ${d.id}`)
+    //     .classed("active", d => d.id === "op_duration")
+    //     .text(d => d.label)
+    //     .on("click", function(event, d) {
+    //         // Update active state
+    //         buttonContainer.selectAll(".duration-btn")
+    //             .classed("active", false);
+    //         d3.select(this).classed("active", true);
             
-            // Update plot
-            const selectedPosition = d3.select("#positionSelect").property("value");
-            if (selectedPosition) {
-                updateTopPlot(data, selectedPosition, d.id);
-            }
-        });
+    //         // Update plot
+    //         const selectedPosition = d3.select("#positionSelect").property("value");
+    //         if (selectedPosition) {
+    //             updateTopPlot(data, selectedPosition, d.id);
+    //         }
+    //     });
 
     // Update dropdown event listener
     // dropdown.on("change", function() {
@@ -437,137 +461,186 @@ function createSurgicalViz() {
     // });
 }
 
-function updateTopPlot(data, position, durationType) {
-    console.log("Updating top plot with position:", position, "and duration type:", durationType);
-    
-    const margin = { top: 20, right: 30, bottom: 40, left: 110 };
+function updateTopPlot(data, position) {
+    const margin = { top: 0, right: 30, bottom: 40, left: 110 };
     const width = 800 - margin.left - margin.right;
-    const height = 300 - margin.top - margin.bottom;
+    const height = 500 - margin.top - margin.bottom;
 
-    // Get duration label
-    const durationLabel = {
-        'op_duration': 'Operation',
-        'case_duration': 'Case',
-        'ane_duration': 'Anesthesia',
-    }[durationType];
+    const durationTypes = [
+        { id: 'op_duration', label: 'Operation' },
+        { id: 'case_duration', label: 'Case' },
+        { id: 'ane_duration', label: 'Anesthesia' }
+    ];
 
-    // Filter data for selected position and duration type
-    const filteredData = data
-        .filter(d => d.position === position)
-        .map(d => +d[durationType]);
-
-    console.log("Filtered Data:", filteredData); // Debugging statement
-
-    // Create histogram bins
-    const histogram = d3.histogram()
-        .domain([0, d3.max(filteredData)])
-        .thresholds(20); // 20 bins for duration distribution
-
-    const bins = histogram(filteredData);
-
-    console.log("Bins:", bins); // Debugging statement
-
-    // Clear existing plot
+    // Clear and create SVG
     d3.select("#topPositionPlot").selectAll("*").remove();
-
-    // Create new SVG
-    const topSvg = d3.select("#topPositionPlot")
+    const svg = d3.select("#topPositionPlot")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom + 20) // Add extra space for the title
+        .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", `translate(${margin.left},${margin.top + 20})`) // Adjust the transform to move the plot down
+        .attr("transform", `translate(${margin.left}, -80)`);
 
-    // Scales
-    const x = d3.scaleLinear()
-        .domain([0, d3.max(filteredData)])
+    // Filter data
+    const filteredData = data.filter(d => d.position === position);
+
+    // X Scale (Duration)
+    const xScale = d3.scaleLinear()
+        .domain([0, d3.max(filteredData, d => Math.max(+d.op_duration, +d.case_duration, +d.ane_duration))])
         .range([0, width]);
 
-    const y = d3.scaleLinear()
-        .domain([0, d3.max(bins, d => d.length)])
-        .range([height, 0]);
+    // Y Scale (Categories)
+    const yScale = d3.scaleBand()
+        .domain(durationTypes.map(d => d.label))
+        .range([height, 0])
+        .padding(0.5); // Adjust padding for correct ridgeline spacing
 
-    // Draw X-Axis
-    topSvg.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x).ticks(10).tickFormat(d => `${d}m`))
-        .selectAll("text")
+    // KDE Functions
+    function kernelDensityEstimator(kernel, X) {
+        return function (V) {
+            return X.map(x => [x, d3.mean(V, v => kernel(x - v))]);
+        };
+    }
+
+    function kernelEpanechnikov(k) {
+        return v => Math.abs(v /= k) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+    }
+
+    // Compute densities
+    const kde = kernelDensityEstimator(kernelEpanechnikov(7), xScale.ticks(100));
+    const densities = durationTypes.map(type => {
+        const values = filteredData
+            .map(d => +d[type.id])
+            .filter(d => !isNaN(d));
+        return {
+            key: type.label,
+            density: kde(values)
+        };
+    });
+
+    // Color Scale
+    const colorScale = d3.scaleOrdinal()
+        .domain(durationTypes.map(d => d.label))
+        .range(['#69b3a2', '#404080', '#e15759']);
+
+    // Add tooltip div with enhanced styling
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+        .style("position", "absolute")
+        .style("background", "linear-gradient(to bottom, #ffffff, #f5f5f5)")
+        .style("border", "1px solid rgba(0,0,0,0.1)")
+        .style("border-radius", "6px")
+        .style("padding", "12px")
+        .style("box-shadow", "2px 2px 6px rgba(0, 0, 0, 0.1)")
         .style("font-family", "Sora")
-        .style("font-size", "11px");
+        .style("font-size", "12px")
+        .style("line-height", "1.4")
+        .style("transition", "opacity 0.2s")
+        .style("pointer-events", "none")
+        .style("z-index", "1000");
 
-    // Draw Y-Axis
-    topSvg.append("g")
-        .call(d3.axisLeft(y).ticks(10))
-        .selectAll("text")
-        .style("font-family", "Sora")
-        .style("font-size", "11px");
-
-    // Add X-Axis Grid Lines
-    topSvg.append("g")
-        .attr("class", "x-axis-grid")
-        .attr("transform", `translate(0,${height})`)
-        .call(
-            d3.axisBottom(x)
-                .ticks(10)
-                .tickSize(-height)
-                .tickFormat("")
-        )
-        .selectAll("line")
-        .style("stroke", "lightgrey")
-        .style("stroke-opacity", 0.2);
-
-    // Add Y-Axis Grid Lines
-    topSvg.append("g")
-        .attr("class", "y-axis-grid")
-        .call(
-            d3.axisLeft(y)
-                .ticks(10)
-                .tickSize(-width)
-                .tickFormat("")
-        )
-        .selectAll("line")
-        .style("stroke", "lightgrey")
-        .style("stroke-opacity", 0.2);
-
-    // Remove axis domain lines (spines)
-    topSvg.selectAll(".domain").remove();
-
-    // Add bars
-    topSvg.selectAll("rect")
-        .data(bins)
-        .enter()
-        .append("rect")
-        .attr("x", d => x(d.x0))
-        .attr("width", d => x(d.x1) - x(d.x0))
-        .attr("y", d => y(d.length))
-        .attr("height", d => height - y(d.length))
-        .attr("fill", "crimson")
-        .style("font-family", "Sora")
-        .on("mouseover", function (event, d) {
-            d3.select(this).attr("opacity", 0.8);
-            topSvg.append("text")
-                .attr("class", "tooltip")
-                .attr("x", x(d.x0) + (x(d.x1) - x(d.x0)) / 2)
-                .attr("y", y(d.length) - 5)
-                .attr("text-anchor", "middle")
-                .style("font-size", "12px")
-                .text(`${d.length} cases: ${Math.round(d.x0)}-${Math.round(d.x1)} mins`);
+    // Add Ridgeline Paths with tooltip
+    svg.selectAll(".ridgeline")
+        .data(densities)
+        .join("path")
+        .attr("transform", d => `translate(0, ${yScale(d.key) + yScale.bandwidth() / 2})`)
+        .attr("fill", d => colorScale(d.key))
+        .attr("opacity", 0.7)
+        .attr("stroke", d => d3.rgb(colorScale(d.key)).darker(1))
+        .attr("stroke-width", 1)
+        .on("mouseover", function(event, d) {
+            d3.select(this)
+                .attr("opacity", 1)
+                .attr("stroke-width", 2);
+            tooltip.style("opacity", 1);
         })
-        .on("mouseout", function () {
-            d3.select(this).attr("opacity", 1);
-            topSvg.selectAll(".tooltip").remove();
+        .on("mousemove", function(event, d) {
+            const [x, y] = d3.pointer(event);
+            const duration = Math.round(xScale.invert(x));
+            const counts = filteredData.filter(data => 
+                Math.abs(+data[durationTypes.find(t => t.label === d.key).id] - duration) < 5
+            ).length;
+            
+            // Update tooltip content with styled HTML
+            tooltip.html(`
+                <div style="font-weight: bold; color: ${colorScale(d.key)}; margin-bottom: 5px">
+                    ${d.key}
+                </div>
+                <div style="color: #666">
+                    Duration: <span style="color: #333; font-weight: 600">${duration} mins</span>
+                </div>
+                <div style="color: #666">
+                    Count: <span style="color: #333; font-weight: 600">${counts} cases</span>
+                </div>
+            `)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 10) + "px");
+        })
+        .on("mouseout", function() {
+            d3.select(this)
+                .attr("opacity", 0.7)
+                .attr("stroke-width", 1);
+            tooltip.style("opacity", 0);
+        })
+        .attr("d", d => {
+            const area = d3.area()
+                .curve(d3.curveBasis)
+                .x(d => xScale(d[0])) // X position based on duration
+                .y0(yScale.bandwidth()+32)
+                .y1(d => yScale.bandwidth()+32 - d[1] * yScale.bandwidth() * 60); // Adjust density scaling
+            return area(d.density);
         });
 
-    // Add title
-    topSvg.append("text")
-        .attr("x", width / 2)
-        .attr("y", -margin.top / 2)
-        .attr("text-anchor", "middle")
-        .attr("class", "plot-title")
-        .style("font-size", "14px")
-        .style("font-weight", "bold")
+    // Add X Axis
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xScale).ticks(6));
+
+    // Add Y Axis (Categories)
+    const yAxis = svg.append("g")
+        .call(d3.axisLeft(yScale))
+        .attr("transform", `translate(0, 0)`)
+        .call(g => {
+            g.select(".domain").remove();
+            g.selectAll(".tick line")
+                .attr("x2", width)
+                .attr("stroke-opacity", 0.1)
+                .attr("transform", `translate(0, ${yScale.bandwidth()+32})`);
+        });
+
+    // Style Y Axis Labels
+    yAxis.selectAll(".tick text")
         .style("font-family", "Sora")
-        .text(`${durationLabel} Duration Distribution for ${position} Position`);
+        .style("font-size", "11px")
+        .attr("transform", `translate(0, ${yScale.bandwidth()+32})`); // Align text with ridgelines
+
+    // X-Axis Label
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height + 35)
+        .attr("text-anchor", "middle")
+        .style("font-family", "Sora")
+        .text("Duration (minutes)");
+
+    // Y-Axis Label
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -margin.left + 15)
+        .attr("text-anchor", "middle")
+        .style("font-family", "Sora")
+        .style("font-size", "12px")
+        .text("Duration Type");
+
+    // Title
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", +100)
+        .attr("text-anchor", "middle")
+        .style("font-family", "Sora")
+        .style("font-size", "14px")
+        .text(`Duration Distributions for ${position} Position`);
 }
 
 
