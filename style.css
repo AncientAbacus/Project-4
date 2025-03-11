@@ -752,13 +752,18 @@ h5#mortalitysub.mortalityverdict {
   font-size:125%;
 }
 
-div#prognosis{
-  background-color:#f3f0f0b4;
-  padding:5px;
+div#prognosis {
+  background-color: #f3f0f0b4;
+  padding: 5px;
   border-radius: 15px;
-  margin-bottom:50px;
+  margin-bottom: 50px;
   margin-top: 40px;
-  width:100%;
+  width: 100%;
+  
+  /* Fixed positioning */
+  bottom: 0; /* Stick to the bottom of the viewport */
+  left: 0; /* Align to the left edge */
+  z-index: 1000; /* Ensure it stays on top of other content */
 }
 
 h4#mortalitytitle{
@@ -780,3 +785,7 @@ h5#mort{
   margin-bottom:4px;
 }
 
+div#spacer{
+  height:500px;
+  width:50vw;
+}
