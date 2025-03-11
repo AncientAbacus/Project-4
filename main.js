@@ -725,6 +725,7 @@ function updateTopPlot(data, position, durationType) {
 // case duration???? ------------------------------------------------------------------------------------------
 // Function to initialize the first density chart (for optype feature)
 let averageDuration=0;
+let avgDuration=0;
 let keys=[];
 let key1, key2, key3, key4='';
 
@@ -894,7 +895,7 @@ function createDensity(data, feature, chartid) {
                 element.innerHTML = `${textBefore} <span style="color: crimson;">${variableText}</span>${textAfter}`;
             }
         
-            const avgDuration = filteredData.length > 0 
+            avgDuration = filteredData.length > 0 
                 ? d3.mean(filteredData, d => d.case_duration) 
                 : 0;
         
@@ -940,20 +941,6 @@ function createDensity(data, feature, chartid) {
 
             // Function to generate div elements for each key --------------------------------------------------
             keys = [key1, key2, key3, key4];
-            function generateDivs(keys) {
-                // Create a container div (optional, depending on layout needs)
-                let container = document.createElement('div');
-
-                // Loop through the array and create a div for each key
-                keys.forEach(key => {
-                    let div = document.createElement('div');
-                    div.classList.add('name');   // Add class "name" to each div
-                    div.textContent = key;      // Set the text content to the current key
-                    container.appendChild(div); // Append the div to the container
-                });
-                
-                return container;  // Return the container with all divs
-            }
 
             // Append the generated divs to #report
             document.getElementById('report').appendChild(generateDivs(keys));
@@ -1016,6 +1003,22 @@ function wrap(text, width) {
 }
 
 
+// generate keys
+function generateDivs(keys) {
+    // Create a container div (optional, depending on layout needs)
+    let container = document.createElement('div');
+
+    // Loop through the array and create a div for each key
+    keys.forEach(key => {
+        let div = document.createElement('div');
+        div.classList.add('name');   // Add class "name" to each div
+        div.textContent = key;      // Set the text content to the current key
+        container.appendChild(div); // Append the div to the container
+    });
+    
+    return container;  // Return the container with all divs
+}
+
 // reset button
  // Add event listener to the button
  document.getElementById('reset').addEventListener('click', function() {
@@ -1025,4 +1028,53 @@ function wrap(text, width) {
 
     // Append the generated divs to #report
     document.getElementById('opening5').scrollIntoView({ behavior: 'smooth' });
+});
+
+
+document.getElementById('save').addEventListener('click', function() {
+    console.log(keys);
+
+    let dupeKeys = [...keys]; 
+    dupeKeys.push(avgDuration); 
+
+    console.log(dupeKeys);
+
+    // Check if a similar row already exists
+    let historyRows = document.querySelectorAll('.history-row');
+    let exists = Array.from(historyRows).some(row => {
+        let items = Array.from(row.children).map(div => div.textContent);
+        return JSON.stringify(items) === JSON.stringify(dupeKeys.map(key => key.toString() + (key === avgDuration ? " Hours" : "")));
+    });
+
+    if (exists) {
+        console.log("Duplicate entry, not saving.");
+        return; // Stop execution if duplicate
+    }
+
+    // Create a row div
+    let row = document.createElement('div');
+    row.classList.add('history-row');
+
+    // Create four divs for keys
+    keys.forEach(key => {
+        let keyDiv = document.createElement('div');
+        keyDiv.textContent = key;
+        keyDiv.classList.add('history-item');
+        row.appendChild(keyDiv);
+    });
+
+    // Create a special div for avgDuration
+    let avgDiv = document.createElement('div');
+    avgDiv.textContent = `${avgDuration.toFixed(2)} Hours`;
+    avgDiv.classList.add('history-avg'); // Different styling
+    row.appendChild(avgDiv);
+
+    // Append the row to the history grid container
+    document.getElementById('history').appendChild(row);
+});
+
+
+// clear history
+document.getElementById('clear').addEventListener('click', function() {
+    d3.select('#history').html('');
 });

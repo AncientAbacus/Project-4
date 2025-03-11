@@ -805,7 +805,48 @@ div#spacer{
   margin-top:20px;
 }
 
-/* Style each div */
+/* history -----------------------------------------------------*/
+#history {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: 'Plus Jakarta Sans';
+  margin-top:50px;
+}
+
+.history-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 4 keys + 1 avg */
+  gap: 10px;
+  padding: 5px;
+}
+
+.history-item {
+  background: white;
+  color: black;
+  border: solid 1px black;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.history-avg {
+  background: crimson; /* Different color for emphasis */
+  color: white;
+  font-weight: lighter;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+}
+
+
+/* Style each div ----------------------------------------------------*/
 .name {
   background-color: #f3f0f0b4; /* Light gray background */
   padding: 10px; /* Add padding */
@@ -833,5 +874,36 @@ h5#mort1{
 }
 
 #reset:hover{
+  cursor:pointer;
+}
+
+#save{
+  background-color: #f3f0f0b4;
+  color:black;
+  padding: 10px; /* Add padding */
+  margin-left:10px;
+  border-radius: 15px; /* Rounded corners */
+  text-align: center; /* Center text */
+  display:inline;
+  font-family: 'Plus Jakarta Sans';
+}
+
+#save:hover{
+  cursor:pointer;
+}
+
+
+#clear{
+  background-color: #f3f0f0b4;
+  color:black;
+  padding: 10px; /* Add padding */
+  margin-left:10px;
+  border-radius: 15px; /* Rounded corners */
+  text-align: center; /* Center text */
+  display:inline;
+  font-family: 'Plus Jakarta Sans';
+}
+
+#clear:hover{
   cursor:pointer;
 }
