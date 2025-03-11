@@ -743,9 +743,9 @@ function createDensity(data, feature, chartid) {
         width = 1000 - margin.left - margin.right;
         height = 600 - margin.top - margin.bottom;
     } else {
-        margin = { top: 10, right: 40, bottom: 40, left: 40 };
-        width = 500 - margin.left - margin.right;
-        height = 200 - margin.top - margin.bottom;
+        margin = { top: 0, right: 30, bottom: 40, left: 100 };
+        width = 1000 - margin.left - margin.right;
+        height = 600 - margin.top - margin.bottom;
     }
     
 
@@ -791,7 +791,7 @@ function createDensity(data, feature, chartid) {
     
 
     if (feature === 'opname') {
-        document.getElementById('mort').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('secondary').scrollIntoView({ behavior: 'smooth' });
     } else if (feature === 'age') {
         document.getElementById('age').scrollIntoView({ behavior: 'smooth' });
     }
@@ -846,8 +846,8 @@ function createDensity(data, feature, chartid) {
         .attr("y", d => y(d.key))
         .attr("width", d => x(d.density))
         .attr("height", y.bandwidth())
-        .attr("rx", 5)  // Set the radius for rounded corners (adjust the value as needed)
-        .attr("ry", 5) 
+        .attr("rx", 3)  // Set the radius for rounded corners (adjust the value as needed)
+        .attr("ry", 3) 
         .attr("fill", "black")
         .on('click', function(event) {
             const chartContainer = d3.select(this.parentNode); // Restrict selection to the clicked chart
@@ -866,6 +866,8 @@ function createDensity(data, feature, chartid) {
                 d3.select('#expandable3').html('');
             } else if (feature === 'age') {
                 d3.select('#expandable3').html('');
+            }else if (feature ==='sex'){
+                document.getElementById('prognosis').scrollIntoView({ behavior: 'smooth' });
             }
             const filteredData = data.filter(d => {
                 if (feature === 'age') {
