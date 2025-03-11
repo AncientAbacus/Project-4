@@ -469,21 +469,30 @@ function createStreamGraph() {
 // Create surgical position visualization
 function createSurgicalPositionViz() {
     // Set dimensions
+
     const width = 600;
     const height = 400;
+
+    const imageWidth = 200;
+    const imageHeight = 100;
 
     // Create SVGs for both plots
     const topSvg = d3.select("#topPositionPlot")
         .append("svg")
         .attr("width", width)
         .attr("height", height)
-        .style("border", "1px solid #ccc");
 
     const bottomSvg = d3.select("#bottomPositionPlot")
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .style("border", "1px solid #ccc");
+        .attr("width", imageWidth)
+        .attr("height", imageHeight);
+
+    // Initial image
+    bottomSvg.append("image")
+        .attr("xlink:href", `surgical positions/supine.png`)
+        .attr("width", imageWidth)
+        .attr("height", imageHeight)
+        .attr("preserveAspectRatio", "xMidYMid meet");
 
     // Load CSV and create dropdown
     d3.csv("data/cases_new.csv").then(function(data) {
@@ -505,6 +514,8 @@ function createSurgicalPositionViz() {
             .append("option")
             .text(d => d)
             .attr("value", d => d);
+        
+        updateTopPlot(data, 'Supine', 'op_duration');
 
         // Update function for position image
         function updatePositionImage(position) {
@@ -512,8 +523,8 @@ function createSurgicalPositionViz() {
             
             bottomSvg.append("image")
                 .attr("xlink:href", `surgical positions/${position}.png`)
-                .attr("width", width)
-                .attr("height", height)
+                .attr("width", imageWidth)
+                .attr("height", imageHeight)
                 .attr("preserveAspectRatio", "xMidYMid meet");
         }
 
@@ -576,6 +587,9 @@ function createSurgicalViz() {
 }
 
 function updateTopPlot(data, position, durationType) {
+    console.log("Updating top plot with position:", position, "and duration type:", durationType);
+    
+    const margin = { top: 20, right: 30, bottom: 40, left: 110 };
     const width = 800 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
@@ -583,13 +597,15 @@ function updateTopPlot(data, position, durationType) {
     const durationLabel = {
         'op_duration': 'Operation',
         'case_duration': 'Case',
-        'ane_duration': 'Anesthesia'
+        'ane_duration': 'Anesthesia',
     }[durationType];
 
     // Filter data for selected position and duration type
     const filteredData = data
         .filter(d => d.position === position)
         .map(d => +d[durationType]);
+
+    console.log("Filtered Data:", filteredData); // Debugging statement
 
     // Create histogram bins
     const histogram = d3.histogram()
@@ -598,16 +614,18 @@ function updateTopPlot(data, position, durationType) {
 
     const bins = histogram(filteredData);
 
+    console.log("Bins:", bins); // Debugging statement
+
     // Clear existing plot
     d3.select("#topPositionPlot").selectAll("*").remove();
 
     // Create new SVG
-    const svg = d3.select("#topPositionPlot")
+    const topSvg = d3.select("#topPositionPlot")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("height", height + margin.top + margin.bottom + 20) // Add extra space for the title
         .append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+        .attr("transform", `translate(${margin.left},${margin.top + 20})`) // Adjust the transform to move the plot down
 
     // Scales
     const x = d3.scaleLinear()
@@ -619,7 +637,7 @@ function updateTopPlot(data, position, durationType) {
         .range([height, 0]);
 
     // Draw X-Axis
-    svg.append("g")
+    topSvg.append("g")
         .attr("transform", `translate(0,${height})`)
         .call(d3.axisBottom(x).ticks(10).tickFormat(d => `${d}m`))
         .selectAll("text")
@@ -627,14 +645,14 @@ function updateTopPlot(data, position, durationType) {
         .style("font-size", "11px");
 
     // Draw Y-Axis
-    svg.append("g")
+    topSvg.append("g")
         .call(d3.axisLeft(y).ticks(10))
         .selectAll("text")
         .style("font-family", "Sora")
         .style("font-size", "11px");
 
     // Add X-Axis Grid Lines
-    svg.append("g")
+    topSvg.append("g")
         .attr("class", "x-axis-grid")
         .attr("transform", `translate(0,${height})`)
         .call(
@@ -648,7 +666,7 @@ function updateTopPlot(data, position, durationType) {
         .style("stroke-opacity", 0.2);
 
     // Add Y-Axis Grid Lines
-    svg.append("g")
+    topSvg.append("g")
         .attr("class", "y-axis-grid")
         .call(
             d3.axisLeft(y)
@@ -661,10 +679,10 @@ function updateTopPlot(data, position, durationType) {
         .style("stroke-opacity", 0.2);
 
     // Remove axis domain lines (spines)
-    svg.selectAll(".domain").remove();
+    topSvg.selectAll(".domain").remove();
 
     // Add bars
-    svg.selectAll("rect")
+    topSvg.selectAll("rect")
         .data(bins)
         .enter()
         .append("rect")
@@ -672,10 +690,11 @@ function updateTopPlot(data, position, durationType) {
         .attr("width", d => x(d.x1) - x(d.x0))
         .attr("y", d => y(d.length))
         .attr("height", d => height - y(d.length))
-        .attr("fill", "#69b3a2")
+        .attr("fill", "crimson")
+        .style("font-family", "Sora")
         .on("mouseover", function (event, d) {
             d3.select(this).attr("opacity", 0.8);
-            svg.append("text")
+            topSvg.append("text")
                 .attr("class", "tooltip")
                 .attr("x", x(d.x0) + (x(d.x1) - x(d.x0)) / 2)
                 .attr("y", y(d.length) - 5)
@@ -685,17 +704,18 @@ function updateTopPlot(data, position, durationType) {
         })
         .on("mouseout", function () {
             d3.select(this).attr("opacity", 1);
-            svg.selectAll(".tooltip").remove();
+            topSvg.selectAll(".tooltip").remove();
         });
 
     // Add title
-    svg.append("text")
+    topSvg.append("text")
         .attr("x", width / 2)
         .attr("y", -margin.top / 2)
         .attr("text-anchor", "middle")
         .attr("class", "plot-title")
         .style("font-size", "14px")
         .style("font-weight", "bold")
+        .style("font-family", "Sora")
         .text(`${durationLabel} Duration Distribution for ${position} Position`);
 }
 
