@@ -842,7 +842,7 @@ function createDensity(data, feature, chartid) {
         .on('click', function(event) {
             const chartContainer = d3.select(this.parentNode); // Restrict selection to the clicked chart
         
-            chartContainer.selectAll('.bar').style('fill', "black"); // Reset only bars in this chart
+            chartContainer.selectAll('.bar').style('fill', "grey"); // Reset only bars in this chart
             d3.select(this).style('fill', 'crimson'); // Highlight clicked bar
         
             const key = d3.select(this).datum().key;
@@ -921,7 +921,7 @@ function createDensity(data, feature, chartid) {
         .attr("dy", "0.35em") // Align text properly
         .style("font-family", "Sora")
         .style("font-size", `${yFontSize}px`)
-        .style("fill", "black")
+        .style("fill", "grey")
         .text(d => d3.format(".0%")(d.density)); // Format as percentage        
 }
 
