@@ -726,7 +726,7 @@ function updateTopPlot(data, position, durationType) {
 // Function to initialize the first density chart (for optype feature)
 let averageDuration=0;
 let keys=[];
-let key1, key2, key3, key4=0;
+let key1, key2, key3, key4='';
 
 function testMortality() {
     averageDuration = d3.mean(data, d => d.case_duration);
@@ -915,6 +915,11 @@ function createDensity(data, feature, chartid) {
                 insertProgText('#survivability', '',`${avgDuration.toFixed(2)} hours`,`, which is the same as the average!`);
 
             }
+
+
+            //define keys
+            keys = [key1, key2, key3, key4];
+
         
             // Cascading logic
             if (feature === 'optype') {
@@ -935,7 +940,6 @@ function createDensity(data, feature, chartid) {
 
             // Function to generate div elements for each key --------------------------------------------------
             keys = [key1, key2, key3, key4];
-            console.log(keys);
             function generateDivs(keys) {
                 // Create a container div (optional, depending on layout needs)
                 let container = document.createElement('div');
@@ -966,7 +970,10 @@ function createDensity(data, feature, chartid) {
         .style("font-family", "Sora")
         .style("font-size", `${yFontSize}px`)
         .style("fill", "grey")
-        .text(d => d3.format(".0%")(d.density)); // Format as percentage        
+        .text(d => d3.format(".0%")(d.density)); // Format as percentage     
+        
+        
+    // update history
 }
 
 // utlity function
