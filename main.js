@@ -881,12 +881,8 @@ function generateDivs(keys) {
 
 
 document.getElementById('save').addEventListener('click', function() {
-    console.log(keys);
-
     let dupeKeys = [...keys]; 
     dupeKeys.push(avgDuration); 
-
-    console.log(dupeKeys);
 
     // Check if a similar row already exists
     let historyRows = document.querySelectorAll('.history-row');
@@ -897,14 +893,16 @@ document.getElementById('save').addEventListener('click', function() {
 
     if (exists) {
         console.log("Duplicate entry, not saving.");
-        return; // Stop execution if duplicate
+        return;
     }
 
     // Create a row div
     let row = document.createElement('div');
     row.classList.add('history-row');
+    row.style.opacity = '0'; // Start hidden
+    row.style.transition = 'opacity 0.5s ease-in-out'; // Add transition effect
 
-    // Create four divs for keys
+    // Create divs for keys
     keys.forEach(key => {
         let keyDiv = document.createElement('div');
         keyDiv.textContent = key;
@@ -912,20 +910,35 @@ document.getElementById('save').addEventListener('click', function() {
         row.appendChild(keyDiv);
     });
 
-    // Create a special div for avgDuration
+    // Create div for avgDuration
     let avgDiv = document.createElement('div');
     avgDiv.textContent = `${avgDuration.toFixed(2)} Hours`;
-    avgDiv.classList.add('history-avg'); // Different styling
+    avgDiv.classList.add('history-avg');
     row.appendChild(avgDiv);
 
-    // Append the row to the history grid container
-    document.getElementById('history').appendChild(row);
+    // Append row to history container
+    let historyContainer = document.getElementById('history');
+    historyContainer.appendChild(row);
+
+    // Trigger fade-in
+    setTimeout(() => {
+        row.style.opacity = '1';
+    }, 10);
 });
 
-
-// clear history
+// Clear history with fade-out effect
 document.getElementById('clear').addEventListener('click', function() {
-    d3.select('#history').html('');
+    let historyRows = document.querySelectorAll('.history-row');
+
+    historyRows.forEach(row => {
+        row.style.transition = 'opacity 0.5s ease-in-out';
+        row.style.opacity = '0'; // Fade out
+
+        // Remove the row after the transition ends
+        setTimeout(() => {
+            row.remove();
+        }, 500);
+    });
 });
 
 
