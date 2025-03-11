@@ -737,15 +737,15 @@ function createDensity(data, feature, chartid) {
     if (feature === 'optype') {
         margin = { top: 10, right: 30, bottom: 40, left: 100 };
         width = 900 - margin.left - margin.right;
-        height = 500 - margin.top - margin.bottom;
+        height = 400 - margin.top - margin.bottom;
     } else if (feature === 'opname') {
         margin = { top: 10, right: 30, bottom: 40, left: 180 };
         width = 1000 - margin.left - margin.right;
-        height = 700 - margin.top - margin.bottom;
+        height = 600 - margin.top - margin.bottom;
     } else {
         margin = { top: 10, right: 40, bottom: 40, left: 40 };
         width = 500 - margin.left - margin.right;
-        height = 400 - margin.top - margin.bottom;
+        height = 200 - margin.top - margin.bottom;
     }
     
 
@@ -820,7 +820,7 @@ function createDensity(data, feature, chartid) {
     const y = d3.scaleBand()
         .domain(densityData.map(d => d.key))
         .range([height, 0])  // Restrict height to max 300px
-        .padding(0.1);
+        .padding(0.5);
 
     //axes
 // Remove x-axis since we are moving the density labels
