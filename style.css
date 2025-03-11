@@ -559,6 +559,7 @@ svg.rotate {
   background-color: white; /* Adjust as needed */
   color: black;
   box-sizing: border-box;
+  position:relative;
 }
 
 
@@ -631,6 +632,19 @@ svg.rotate {
   margin-top: 20px;
   animation: bounce 2s infinite ease-in-out; /* Apply both animations */
   animation-delay: 5.2s; /* Delay for both animations */
+}
+
+
+.up {  
+  position:absolute;
+  bottom: 45px; /* Align it to the bottom */
+  right: 1px; /* Align it to the right */
+  justify-content: center;
+  animation: bounce 2s infinite ease-in-out; /* Apply both animations */
+}
+
+.up:hover{
+  cursor:pointer;
 }
 
 
@@ -790,8 +804,9 @@ h5#mort{
 }
 
 div#spacer{
-  height:500px;
-  width:50vw;
+  height:300px;
+  width:100%;
+  position:relative;
 }
 
 #age, #sex, #secondary{

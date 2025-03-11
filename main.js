@@ -927,3 +927,8 @@ document.getElementById('save').addEventListener('click', function() {
 document.getElementById('clear').addEventListener('click', function() {
     d3.select('#history').html('');
 });
+
+
+document.querySelector('.up').addEventListener('click', function() {
+    document.getElementById('opening').scrollIntoView({ behavior: 'smooth' });
+});
