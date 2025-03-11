@@ -774,11 +774,25 @@ function createDensity(data, feature, chartid) {
         .attr("height", y.bandwidth())
         .attr("rx", 3)  // Set the radius for rounded corners (adjust the value as needed)
         .attr("ry", 3) 
-        .attr("fill", "black")
+        .attr("fill", "black")   
+        .on("mouseover", function (event, d) {
+            d3.select(this)
+                .transition()
+                .duration(200)
+                .attr("y", y(d.key) - 5) // Move the bar up slightly
+                .attr("height", y.bandwidth() + 5); // Increase height
+        })
+        .on("mouseleave", function (event, d) {
+            d3.select(this)
+                .transition()
+                .duration(200)
+                .attr("y", y(d.key)) // Reset y position
+                .attr("height", y.bandwidth()); // Reset height
+        })
         .on('click', function(event) {
             const chartContainer = d3.select(this.parentNode); // Restrict selection to the clicked chart
         
-            chartContainer.selectAll('.bar').style('fill', "grey"); // Reset only bars in this chart
+            chartContainer.selectAll('.bar').style("fill", "rgba(243, 240, 240, 1)") // 0.7 = 70% opacity
             d3.select(this).style('fill', 'crimson'); // Highlight clicked bar
             // Reset the keys array and add the key of the clicked bar
             const key = d3.select(this).datum().key;
