@@ -726,6 +726,7 @@ function updateTopPlot(data, position, durationType) {
 // Function to initialize the first density chart (for optype feature)
 let averageDuration=0;
 let keys=[];
+let key1, key2, key3, key4=0;
 
 function testMortality() {
     averageDuration = d3.mean(data, d => d.case_duration);
@@ -856,20 +857,24 @@ function createDensity(data, feature, chartid) {
         
             chartContainer.selectAll('.bar').style('fill', "grey"); // Reset only bars in this chart
             d3.select(this).style('fill', 'crimson'); // Highlight clicked bar
-        
+            // Reset the keys array and add the key of the clicked bar
             const key = d3.select(this).datum().key;
-            keys.push(key);
+
             // Remove previous charts if they exist
             if (feature === 'optype') {
                 d3.select('#expandable').html('');
                 d3.select('#expandable2').html('');
                 d3.select('#expandable3').html('');
+                key1 = d3.select(this).datum().key;
             } else if (feature === 'opname') {
                 d3.select('#expandable2').html('');
                 d3.select('#expandable3').html('');
+                key2 = d3.select(this).datum().key;
             } else if (feature === 'age') {
                 d3.select('#expandable3').html('');
+                key3 = d3.select(this).datum().key;
             }else if (feature ==='sex'){
+                key4 = d3.select(this).datum().key;
                 document.getElementById('mort1').scrollIntoView({ behavior: 'smooth' });
             }
 
@@ -929,6 +934,8 @@ function createDensity(data, feature, chartid) {
             document.getElementById('report').innerHTML = '';  // Clear the content of #report
 
             // Function to generate div elements for each key --------------------------------------------------
+            keys = [key1, key2, key3, key4];
+            console.log(keys);
             function generateDivs(keys) {
                 // Create a container div (optional, depending on layout needs)
                 let container = document.createElement('div');
@@ -1000,3 +1007,15 @@ function wrap(text, width) {
         }
     });
 }
+
+
+// reset button
+ // Add event listener to the button
+ document.getElementById('reset').addEventListener('click', function() {
+    // Clear the content of #report
+    document.getElementById('report').innerHTML = '';
+    keys=[];
+
+    // Append the generated divs to #report
+    document.getElementById('opening5').scrollIntoView({ behavior: 'smooth' });
+});

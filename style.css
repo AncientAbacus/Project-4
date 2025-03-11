@@ -821,3 +821,17 @@ h5#mort1{
   margin-bottom:4px;
   padding-top:200px;
 }
+
+#reset{
+  background-color: crimson;
+  color:white;
+  padding: 10px; /* Add padding */
+  border-radius: 15px; /* Rounded corners */
+  text-align: center; /* Center text */
+  display:inline;
+  font-family: 'Plus Jakarta Sans';
+}
+
+#reset:hover{
+  cursor:pointer;
+}
