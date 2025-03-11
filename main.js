@@ -346,7 +346,7 @@ function createStreamGraph() {
         .range([margin.left, width - margin.right])
         .padding(0.1);
 
-    console.log(xScale.domain());
+    // console.log(xScale.domain());
 
     const yScale = d3.scaleLinear()
         .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
@@ -536,7 +536,7 @@ function createSurgicalPositionViz() {
             console.log("Selected position:", selectedPosition);
             if (selectedPosition) {
                 updatePositionImage(selectedPosition);
-                console.log("Calling updateTopPlot with data:", data.length, "rows");
+                // console.log("Calling updateTopPlot with data:", data.length, "rows");
                 updateTopPlot(data, selectedPosition, 'op_duration');
             }
         });
@@ -725,6 +725,8 @@ function updateTopPlot(data, position, durationType) {
 // case duration???? ------------------------------------------------------------------------------------------
 // Function to initialize the first density chart (for optype feature)
 let averageDuration=0;
+let keys=[];
+
 function testMortality() {
     averageDuration = d3.mean(data, d => d.case_duration);
     createDensity(data, 'optype', 'selectable');
@@ -856,6 +858,7 @@ function createDensity(data, feature, chartid) {
             d3.select(this).style('fill', 'crimson'); // Highlight clicked bar
         
             const key = d3.select(this).datum().key;
+            keys.push(key);
             // Remove previous charts if they exist
             if (feature === 'optype') {
                 d3.select('#expandable').html('');
@@ -867,9 +870,9 @@ function createDensity(data, feature, chartid) {
             } else if (feature === 'age') {
                 d3.select('#expandable3').html('');
             }else if (feature ==='sex'){
-                document.getElementById('prognosis').scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('mort1').scrollIntoView({ behavior: 'smooth' });
             }
-            
+
             const filteredData = data.filter(d => {
                 if (feature === 'age') {
                     const binStart = Math.floor(d.age / 5) * 5;
@@ -912,7 +915,6 @@ function createDensity(data, feature, chartid) {
             if (feature === 'optype') {
                 d3.select('#expandable').html('');
                 insertText('#expandable', `What is the name of your operation?`);
-                // insertText2('#primarysub', `You selected: ${key}`);
                 createDensity(filteredData, 'opname', 'expandable');
             } else if (feature === 'opname') {
                 d3.select('#expandable2').html('');
@@ -923,6 +925,28 @@ function createDensity(data, feature, chartid) {
                 insertText('#expandable3', `What is your gender?`);
                 createDensity(filteredData, 'sex', 'expandable3');
             }
+
+            document.getElementById('report').innerHTML = '';  // Clear the content of #report
+
+            // Function to generate div elements for each key --------------------------------------------------
+            function generateDivs(keys) {
+                // Create a container div (optional, depending on layout needs)
+                let container = document.createElement('div');
+
+                // Loop through the array and create a div for each key
+                keys.forEach(key => {
+                    let div = document.createElement('div');
+                    div.classList.add('name');   // Add class "name" to each div
+                    div.textContent = key;      // Set the text content to the current key
+                    container.appendChild(div); // Append the div to the container
+                });
+                
+                return container;  // Return the container with all divs
+            }
+
+            // Append the generated divs to #report
+            document.getElementById('report').appendChild(generateDivs(keys));
+            // document.getElementById('history').appendChild(generateDivs(keys));
         });
     
     primaryChart.selectAll(".bar-label")

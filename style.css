@@ -757,7 +757,7 @@ div#prognosis {
   padding: 5px;
   border-radius: 15px;
   margin-bottom: 50px;
-  margin-top: 100px;
+  margin-top: 30px;
   width: 100%;
   
   /* Fixed positioning */
@@ -792,4 +792,32 @@ div#spacer{
 
 #age, #sex, #secondary{
   padding-top: 50px;
+}
+
+
+
+#report {
+  display: grid;
+  gap: 10px; /* Add spacing between columns */
+}
+
+#report div{
+  margin-top:20px;
+}
+
+/* Style each div */
+.name {
+  background-color: #f3f0f0b4; /* Light gray background */
+  padding: 10px; /* Add padding */
+  border-radius: 5px; /* Rounded corners */
+  text-align: center; /* Center text */
+  display:inline;
+  margin-top:10px;
+  font-family: 'Plus Jakarta Sans';
+}
+
+h5#mort1{
+  font-weight:lighter;
+  margin-bottom:4px;
+  padding-top:200px;
 }
