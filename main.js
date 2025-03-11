@@ -156,7 +156,7 @@ function createRidgeline() {
         .attr('class', 'ridgeline')
         .append('g')
         .attr('transform', `translate(${margin.left}, ${margin.top})`)
-        .style('overflow', 'visible');;
+        .style('overflow', 'visible');
 
     // Get the distinct values of optype (categories)
     const optypes = Array.from(new Set(data.map(d => d.optype))).sort(d3.ascending);
@@ -423,42 +423,6 @@ function createSurgicalViz() {
         {id: 'case_duration', label: 'Case Duration'},
         {id: 'ane_duration', label: 'Anesthesia Duration'}
     ];
-
-    // // Create button container
-    // const buttonContainer = d3.select(".position-dropdown")
-    //     .append("div")
-    //     .attr("class", "duration-buttons");
-
-    // // Add duration buttons
-    // buttonContainer.selectAll("button")
-    //     .data(durationTypes)
-    //     .enter()
-    //     .append("button")
-    //     .attr("class", d => `duration-btn ${d.id}`)
-    //     .classed("active", d => d.id === "op_duration")
-    //     .text(d => d.label)
-    //     .on("click", function(event, d) {
-    //         // Update active state
-    //         buttonContainer.selectAll(".duration-btn")
-    //             .classed("active", false);
-    //         d3.select(this).classed("active", true);
-            
-    //         // Update plot
-    //         const selectedPosition = d3.select("#positionSelect").property("value");
-    //         if (selectedPosition) {
-    //             updateTopPlot(data, selectedPosition, d.id);
-    //         }
-    //     });
-
-    // Update dropdown event listener
-    // dropdown.on("change", function() {
-    //     const selectedPosition = d3.select(this).property("value");
-    //     if (selectedPosition) {
-    //         updatePositionImage(selectedPosition);
-    //         const activeDurationType = d3.select(".duration-btn.active").datum().id;
-    //         updateTopPlot(data, selectedPosition, activeDurationType);
-    //     }
-    // });
 }
 
 function updateTopPlot(data, position) {
