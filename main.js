@@ -869,6 +869,7 @@ function createDensity(data, feature, chartid) {
             }else if (feature ==='sex'){
                 document.getElementById('prognosis').scrollIntoView({ behavior: 'smooth' });
             }
+            
             const filteredData = data.filter(d => {
                 if (feature === 'age') {
                     const binStart = Math.floor(d.age / 5) * 5;
