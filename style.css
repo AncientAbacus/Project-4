@@ -248,6 +248,8 @@ svg.ridgeline:hover path:not(:hover) {
   cursor: pointer;
 }
 
+
+
 /* marching ants animation */
 @keyframes marching-ants {
   to {
@@ -873,9 +875,11 @@ h5#mort1{
   font-family: 'Plus Jakarta Sans';
 }
 
-#reset:hover{
-  cursor:pointer;
+#reset:hover {
+  cursor: pointer;
+  box-shadow: inset 0 0 0 2px black; /* Creates an inner solid black border */
 }
+
 
 #save{
   background-color: #f3f0f0b4;
@@ -890,6 +894,8 @@ h5#mort1{
 
 #save:hover{
   cursor:pointer;
+  box-shadow: inset 0 0 0 2px black; /* Creates an inner solid black border */
+
 }
 
 
@@ -906,4 +912,6 @@ h5#mort1{
 
 #clear:hover{
   cursor:pointer;
+  box-shadow: inset 0 0 0 1px black; /* Creates an inner solid black border */
+
 }
