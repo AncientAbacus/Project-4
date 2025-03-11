@@ -18,8 +18,13 @@ const tooltip = d3.select('body')
 
 // scroll widget ------------------------------------------------------------------------------------
 window.addEventListener('scroll', () => {
-    document.body.style.setProperty('--scroll', window.pageYOffset / (document.body.offsetHeight - window.innerHeight));
-  }, false);
+    const documentHeight = document.documentElement.scrollHeight; // Full document height including dynamically generated content
+    const viewportHeight = window.innerHeight; // The height of the viewport
+    const scrollPosition = window.pageYOffset; // The current scroll position
+
+    // Update the --scroll property based on the current scroll position and full document height
+    document.body.style.setProperty('--scroll', scrollPosition / (documentHeight - viewportHeight));
+}, false);
 
 // load data-----------------------------------------------------------------------------------------
 async function loadData() {

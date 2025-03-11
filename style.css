@@ -248,6 +248,9 @@ svg.ridgeline:hover path:not(:hover) {
   cursor: pointer;
 }
 
+rect.bar:hover{
+  cursor:pointer;
+} 
 
 
 /* marching ants animation */
@@ -696,10 +699,7 @@ svg.rotate {
   gap: 10px; /* Add space between nested elements inside each section */
 }
 
-#prognosis {
-  grid-column: span 2; /* Span across both columns */
-  text-align: center; /* Optionally center text */
-}
+
 
 #mortalitysub {
   padding: 8px;
@@ -754,18 +754,20 @@ h5#mortalitysub.mortalityverdict {
   font-size:125%;
 }
 
+#prognosis {
+  text-align: center; /* Optionally center text */
+}
+
 div#prognosis {
   background-color: #f3f0f0b4;
   padding: 5px;
   border-radius: 15px;
   margin-bottom: 50px;
   margin-top: 30px;
-  width: 100%;
+  width: 800px;
+  margin-left: auto;
+  margin-right: auto;
   
-  /* Fixed positioning */
-  bottom: 0; /* Stick to the bottom of the viewport */
-  left: 0; /* Align to the left edge */
-  z-index: 1000; /* Ensure it stays on top of other content */
 }
 
 h4#mortalitytitle{
