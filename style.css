@@ -362,6 +362,15 @@ span.name:hover {
     text-align: left;
 }
 
+.surgical-position-description {
+  width: 100%;
+  line-height: 1.6;
+  color: black;
+  font-family: Arial, sans-serif;
+  text-align: left;
+  transform: translateY(-300px);
+}
+
 .position-dropdown {
     width: 100%;
     display: flex;
