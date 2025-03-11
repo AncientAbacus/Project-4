@@ -921,16 +921,16 @@ function createDensity(data, feature, chartid) {
             return;
         }
     }
-
+    
     if (feature === 'optype') {
         document.getElementById('secondary').scrollIntoView({ behavior: 'smooth' });
     } else if (feature === 'opname') {
         document.getElementById('mort').scrollIntoView({ behavior: 'smooth' });
     } else if (feature === 'age') {
-        document.getElementById('expandable3').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('age').scrollIntoView({ behavior: 'smooth' });
     }
     else if (feature === 'sex') {
-        document.getElementById('prognosis').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('sex').scrollIntoView({ behavior: 'smooth' });
     }
 
     const totalCount = d3.sum(featureCounts, d => d.count);
